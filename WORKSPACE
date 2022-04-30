@@ -48,6 +48,7 @@ load("@rules_jvm_external//:defs.bzl", "maven_install")
 maven_install(
     artifacts = [
         "com.google.guava:guava:31.1-jre",
+        "org.ta4j:ta4j-core:0.14",
     ],
     repositories = [
         "https://repo1.maven.org/maven2",
