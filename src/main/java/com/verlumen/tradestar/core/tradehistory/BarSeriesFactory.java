@@ -26,7 +26,6 @@ public class BarSeriesFactory {
                 .build();
     }
 
-
     public static boolean candlesAreConforming(ImmutableList<Candle> candles) {
         return sliding(candles, 2)
                 .map(subList -> new CandlePair(subList.get(0), subList.get(1)))
