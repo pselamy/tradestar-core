@@ -2,6 +2,7 @@ java_library(
     name = "adx_indicator_adapter_factory",
     srcs = ["AdxIndicatorAdapterFactory.java"],
     deps = [
+        ":indicator_factory",
         "@maven//:org_ta4j_ta4j_core",
         "@tradestar_protos//:indicators_java_proto",
     ],
