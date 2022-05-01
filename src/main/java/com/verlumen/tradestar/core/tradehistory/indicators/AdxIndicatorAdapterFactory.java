@@ -15,8 +15,7 @@ class AdxIndicatorAdapterFactory implements IndicatorAdapterFactory {
     @Override
     public IndicatorAdapter create(
             BarSeries barSeries, Indicator.Params params) {
-        ADXIndicator driver = driver(barSeries, params);
-        return IndicatorAdapter.create(driver, params);
+        return IndicatorAdapter.create(barSeries, this::driver, params);
     }
 
     private ADXIndicator driver(BarSeries barSeries, Indicator.Params params) {

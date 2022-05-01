@@ -37,18 +37,20 @@ public class IndicatorFactory {
     }
 
     public static class IndicatorAdapter {
+
         private final org.ta4j.core.Indicator<Num> driver;
         private final Indicator.Params params;
 
         private IndicatorAdapter(
-                org.ta4j.core.Indicator<Num> driver, Indicator.Params params) {
-            this.driver = driver;
+                BarSeries barSeries, Ta4jIndicatorFactory factory,
+                Indicator.Params params) {
+            this.driver = factory.create(barSeries, params);
             this.params = params;
         }
 
-        public static IndicatorAdapter create(
-                org.ta4j.core.Indicator<Num> driver, Indicator.Params params) {
-            return new IndicatorAdapter(driver, params);
+        public static IndicatorAdapter create(BarSeries barSeries,
+                Ta4jIndicatorFactory factory, Indicator.Params params) {
+            return new IndicatorAdapter(barSeries, factory, params);
         }
 
         Indicator indicator(int index) {
@@ -58,5 +60,10 @@ public class IndicatorFactory {
                     .setValue(value)
                     .build();
         }
+    }
+
+    interface Ta4jIndicatorFactory {
+        org.ta4j.core.Indicator<Num> create(BarSeries barSeries,
+                                            Indicator.Params params);
     }
 }

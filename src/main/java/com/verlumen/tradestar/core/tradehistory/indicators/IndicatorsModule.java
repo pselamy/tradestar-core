@@ -14,7 +14,7 @@ public class IndicatorsModule extends AbstractModule {
         Multibinder<IndicatorAdapterFactory> indicatorAdapterFactoryBinder =
                 Multibinder.newSetBinder(binder(),
                         IndicatorAdapterFactory.class);
-        ADAPTERS.forEach(adapter ->indicatorAdapterFactoryBinder.addBinding()
+        ADAPTERS.forEach(adapter -> indicatorAdapterFactoryBinder.addBinding()
                 .to(adapter));
     }
 }
