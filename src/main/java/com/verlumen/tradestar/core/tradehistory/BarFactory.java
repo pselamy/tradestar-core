@@ -13,19 +13,17 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static org.ta4j.core.num.DecimalNum.valueOf;
 
 class BarFactory {
-    static Bar create(Candle candle) {
-        checkArgument(candle.hasGranularity());
+    static Bar create(Duration duration, Candle candle) {
         checkArgument(candle.hasStart());
-        checkArgument(candle.hasOpen());
-        checkArgument(candle.hasHigh());
-        checkArgument(candle.hasLow());
-        checkArgument(candle.hasClose());
-        checkArgument(candle.hasVolume());
-        return createBar(candle);
+        checkArgument(candle.getOpen() > 0L);
+        checkArgument(candle.getHigh() > 0L);
+        checkArgument(candle.getLow() > 0L);
+        checkArgument(candle.getClose() > 0L);
+        checkArgument(candle.getVolume() > 0L);
+        return createBar(duration, candle);
     }
 
-    private static Bar createBar(Candle candle) {
-        Duration duration = GranularitySpec.get(candle.getGranularity()).duration();
+    private static Bar createBar(Duration duration, Candle candle) {
         Instant start = Instant.ofEpochSecond((candle.getStart()).getSeconds());
         ZonedDateTime end = start.plus(duration).atZone(ZoneOffset.UTC);
         return BaseBar.builder()
