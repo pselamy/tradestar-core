@@ -40,14 +40,14 @@ public class IndicatorFactory {
         private final org.ta4j.core.Indicator<Num> driver;
         private final Indicator.Params params;
 
-        private IndicatorAdapter(org.ta4j.core.Indicator<Num> driver,
-                                 Indicator.Params params) {
+        private IndicatorAdapter(
+                org.ta4j.core.Indicator<Num> driver, Indicator.Params params) {
             this.driver = driver;
             this.params = params;
         }
 
-        public static IndicatorAdapter create(org.ta4j.core.Indicator<Num> driver,
-                                              Indicator.Params params) {
+        public static IndicatorAdapter create(
+                org.ta4j.core.Indicator<Num> driver, Indicator.Params params) {
             return new IndicatorAdapter(driver, params);
         }
 
