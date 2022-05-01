@@ -2,12 +2,12 @@ package com.verlumen.tradestar.core.tradehistory;
 
 import com.google.common.collect.ImmutableList;
 import com.verlumen.tradestar.protos.candles.Candle;
+import javafx.util.Pair;
 import org.ta4j.core.Bar;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.BaseBarSeriesBuilder;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -27,38 +27,16 @@ public class BarSeriesFactory {
     }
 
     public static boolean candlesAreConforming(ImmutableList<Candle> candles) {
-        return sliding(candles, 2)
-                .map(subList -> new CandlePair(subList.get(0), subList.get(1)))
-                .allMatch(CandlePair::isConforming);
+        return candles.size() <= 1 || adjacentCandles(candles)
+                .map(pair -> Duration.between(
+                        ofEpochSecond(pair.getKey().getStart().getSeconds()),
+                        ofEpochSecond(pair.getValue().getStart().getSeconds())))
+                .distinct()
+                .count() <= 1;
     }
 
-    public static <T> Stream<ImmutableList<T>> sliding(ImmutableList<T> list, int size) {
-        return IntStream.rangeClosed(0, list.size() - size)
-                .mapToObj(start -> list.subList(start, start + size));
-    }
-
-    private static class CandlePair {
-        private final Candle first;
-        private final Candle second;
-
-        private CandlePair(Candle first,
-                           Candle second) {
-            this.first = first;
-            this.second = second;
-        }
-
-        private boolean isConforming() {
-            return first.getGranularity().equals(second.getGranularity()) &&
-                    candlesAreProperlySpaced(GranularitySpec
-                            .get(first.getGranularity())
-                            .duration());
-
-        }
-
-        private boolean candlesAreProperlySpaced(Duration expectedDuration) {
-            Instant instant1 = ofEpochSecond(first.getStart().getSeconds());
-            Instant instant2 = ofEpochSecond(second.getStart().getSeconds());
-            return Duration.between(instant1, instant2).equals(expectedDuration);
-        }
+    private static <T> Stream<Pair<T, T>> adjacentCandles(ImmutableList<T> list) {
+        return IntStream.rangeClosed(0, list.size() - 2)
+                .mapToObj(i -> new Pair<>(list.get(i), list.get(i + 1)));
     }
 }
