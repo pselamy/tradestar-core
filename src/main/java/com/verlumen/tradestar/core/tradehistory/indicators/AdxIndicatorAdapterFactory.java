@@ -4,6 +4,7 @@ import com.verlumen.tradestar.core.tradehistory.indicators.IndicatorFactory.Indi
 import com.verlumen.tradestar.core.tradehistory.indicators.IndicatorFactory.IndicatorAdapterFactory;
 import com.verlumen.tradestar.protos.indicators.Indicator;
 import org.ta4j.core.BarSeries;
+import org.ta4j.core.indicators.adx.ADXIndicator;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.Math.max;
@@ -14,13 +15,15 @@ class AdxIndicatorAdapterFactory implements IndicatorAdapterFactory {
     @Override
     public IndicatorAdapter create(
             BarSeries barSeries, Indicator.Params params) {
+        ADXIndicator driver = driver(barSeries, params);
+        return IndicatorAdapter.create(driver, params);
+    }
+
+    private ADXIndicator driver(BarSeries barSeries, Indicator.Params params) {
         checkArgument(params.hasAdx());
         int barCount = max(params.getAdx().getBarCount(), DEFAULT_BAR_COUNT);
         int diBarCount = max(params.getAdx().getDiBarCount(), DEFAULT_BAR_COUNT);
-        org.ta4j.core.indicators.adx.ADXIndicator driver =
-                new org.ta4j.core.indicators.adx.ADXIndicator(
-                        barSeries, barCount, diBarCount);
-        return IndicatorAdapter.create(driver, params);
+        return new ADXIndicator(barSeries, barCount, diBarCount);
     }
 
     @Override
