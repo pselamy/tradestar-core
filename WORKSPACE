@@ -17,7 +17,7 @@ rules_proto_toolchains()
 
 git_repository(
     name = "tradestar_protos",
-    commit = "95a1cff55572d5f8d458a49bf56f1193a820c521",
+    commit = "6b91809c532448b24aa8eb9aa11affc82df04257",
     remote = "https://github.com/pselamy/tradestar-protos",
     shallow_since = "1651376416 -0500",
 )
