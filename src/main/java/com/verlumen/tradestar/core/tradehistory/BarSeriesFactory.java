@@ -3,7 +3,7 @@ package com.verlumen.tradestar.core.tradehistory;
 import com.google.common.collect.ImmutableList;
 import com.verlumen.tradestar.protos.candles.Candle;
 import com.verlumen.tradestar.protos.candles.Granularity;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.ta4j.core.Bar;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.BaseBarSeriesBuilder;
@@ -40,14 +40,14 @@ public class BarSeriesFactory {
                                                ImmutableList<Candle> candles) {
         return candles.size() <= 1 || adjacentCandles(candles)
                 .map(pair -> Duration.between(
-                        ofEpochSecond(pair.getKey().getStart().getSeconds()),
-                        ofEpochSecond(pair.getValue().getStart().getSeconds())))
+                        ofEpochSecond(pair.getLeft().getStart().getSeconds()),
+                        ofEpochSecond(pair.getRight().getStart().getSeconds())))
                 .allMatch(duration -> duration.equals(granularitySpec.duration()));
     }
 
     private static <T> Stream<Pair<T, T>> adjacentCandles(
             ImmutableList<T> candles) {
         return IntStream.rangeClosed(0, candles.size() - 2)
-                .mapToObj(i -> new Pair<>(candles.get(i), candles.get(i + 1)));
+                .mapToObj(i -> Pair.of(candles.get(i), candles.get(i + 1)));
     }
 }
