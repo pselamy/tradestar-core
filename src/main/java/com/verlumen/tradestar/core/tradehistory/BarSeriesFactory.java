@@ -19,18 +19,25 @@ import static java.time.Instant.ofEpochSecond;
 public class BarSeriesFactory {
     public static BarSeries create(Granularity granularity,
                                    ImmutableList<Candle> candles) {
-        GranularitySpec granularitySpec = GranularitySpec.fromGranularity(granularity);
+        GranularitySpec granularitySpec = GranularitySpec.fromGranularity(
+                granularity);
         checkArgument(candlesAreConforming(granularitySpec, candles));
+        Duration duration = granularitySpec.duration();
+        return create(duration, candles);
+    }
+
+    private static BarSeries create(Duration duration,
+                                    ImmutableList<Candle> candles) {
         ImmutableList<Bar> bars = candles.stream()
-                .map(candle -> BarFactory.create(granularitySpec.duration(),
-                        candle))
+                .map(candle -> BarFactory.create(duration, candle))
                 .collect(toImmutableList());
         return new BaseBarSeriesBuilder()
                 .withBars(bars)
                 .build();
     }
 
-    public static boolean candlesAreConforming(GranularitySpec granularitySpec, ImmutableList<Candle> candles) {
+    public static boolean candlesAreConforming(GranularitySpec granularitySpec,
+                                               ImmutableList<Candle> candles) {
         return candles.size() <= 1 || adjacentCandles(candles)
                 .map(pair -> Duration.between(
                         ofEpochSecond(pair.getKey().getStart().getSeconds()),
@@ -38,8 +45,9 @@ public class BarSeriesFactory {
                 .allMatch(duration -> duration.equals(granularitySpec.duration()));
     }
 
-    private static <T> Stream<Pair<T, T>> adjacentCandles(ImmutableList<T> list) {
-        return IntStream.rangeClosed(0, list.size() - 2)
-                .mapToObj(i -> new Pair<>(list.get(i), list.get(i + 1)));
+    private static <T> Stream<Pair<T, T>> adjacentCandles(
+            ImmutableList<T> candles) {
+        return IntStream.rangeClosed(0, candles.size() - 2)
+                .mapToObj(i -> new Pair<>(candles.get(i), candles.get(i + 1)));
     }
 }
