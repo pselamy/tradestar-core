@@ -1,7 +1,8 @@
 package com.verlumen.tradestar.core.tradehistory.indicators;
 
-import com.verlumen.tradestar.core.tradehistory.indicators.IndicatorFactory.IndicatorAdapter;
-import com.verlumen.tradestar.core.tradehistory.indicators.IndicatorFactory.IndicatorAdapterFactory;
+import com.google.common.collect.ImmutableList;
+import com.verlumen.tradestar.core.tradehistory.indicators.IndicatorAdapterRepository.IndicatorAdapter;
+import com.verlumen.tradestar.core.tradehistory.indicators.IndicatorAdapterRepository.IndicatorAdapterFactory;
 import com.verlumen.tradestar.protos.indicators.Indicator;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.indicators.adx.ADXIndicator;
@@ -15,13 +16,17 @@ class AdxIndicatorAdapterFactory implements IndicatorAdapterFactory {
     @Override
     public IndicatorAdapter create(
             BarSeries barSeries, Indicator.Params params) {
-        return IndicatorAdapter.create(barSeries, this::driver, params);
-    }
-
-    private ADXIndicator driver(BarSeries barSeries, Indicator.Params params) {
         checkArgument(params.hasAdx());
         int barCount = max(params.getAdx().getBarCount(), DEFAULT_BAR_COUNT);
-        int diBarCount = max(params.getAdx().getDiBarCount(), DEFAULT_BAR_COUNT);
+        int diBarCount = max(params.getAdx().getDiBarCount(), barCount);
+        return IndicatorAdapter.create(
+                () -> driver(barSeries, barCount, diBarCount),
+                params,
+                () -> ImmutableList.of(barCount, diBarCount));
+    }
+
+    private ADXIndicator driver(
+            BarSeries barSeries, int barCount, int diBarCount) {
         return new ADXIndicator(barSeries, barCount, diBarCount);
     }
 
