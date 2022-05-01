@@ -38,22 +38,23 @@ public class IndicatorFactory {
 
     public static class IndicatorAdapter {
         private final org.ta4j.core.Indicator<Num> driver;
-        private final Indicator.Type indicatorType;
+        private final Indicator.Params params;
 
-        private IndicatorAdapter(org.ta4j.core.Indicator<Num> driver, Indicator.Type indicatorType) {
+        private IndicatorAdapter(org.ta4j.core.Indicator<Num> driver,
+                                 Indicator.Params params) {
             this.driver = driver;
-            this.indicatorType = indicatorType;
+            this.params = params;
         }
 
         public static IndicatorAdapter create(org.ta4j.core.Indicator<Num> driver,
-                                              Indicator.Type indicatorType) {
-            return new IndicatorAdapter(driver, indicatorType);
+                                              Indicator.Params params) {
+            return new IndicatorAdapter(driver, params);
         }
 
         Indicator indicator(int index) {
             double value = driver.getValue(index).doubleValue();
             return Indicator.newBuilder()
-                    .setType(indicatorType)
+                    .setParams(params)
                     .setValue(value)
                     .build();
         }
