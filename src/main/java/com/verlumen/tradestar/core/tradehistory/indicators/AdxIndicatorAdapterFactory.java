@@ -19,19 +19,13 @@ class AdxIndicatorAdapterFactory implements IndicatorAdapterFactory {
         checkArgument(params.hasAdx());
         int barCount = max(params.getAdx().getBarCount(), DEFAULT_BAR_COUNT);
         int diBarCount = max(params.getAdx().getDiBarCount(), barCount);
-        return IndicatorAdapter.create(
-                () -> driver(barSeries, barCount, diBarCount),
-                params,
+        return IndicatorAdapter.create(params,
+                () -> new ADXIndicator(barSeries, barCount, diBarCount),
                 () -> ImmutableList.of(barCount, diBarCount));
     }
 
-    private ADXIndicator driver(
-            BarSeries barSeries, int barCount, int diBarCount) {
-        return new ADXIndicator(barSeries, barCount, diBarCount);
-    }
-
     @Override
-    public Indicator.Params.TypeCase supportedParams() {
+    public Indicator.Params.TypeCase typeCase() {
         return Indicator.Params.TypeCase.ADX;
     }
 }

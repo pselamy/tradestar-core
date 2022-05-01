@@ -25,7 +25,7 @@ public class IndicatorAdapterRepository {
         this.adapterFactories = adapterFactories
                 .stream()
                 .collect(toImmutableMap(
-                        IndicatorAdapterFactory::supportedParams, identity()));
+                        IndicatorAdapterFactory::typeCase, identity()));
     }
 
     public IndicatorAdapter get(BarSeries barSeries, Indicator.Params params) {
@@ -37,7 +37,7 @@ public class IndicatorAdapterRepository {
     interface IndicatorAdapterFactory {
         IndicatorAdapter create(BarSeries barSeries, Indicator.Params params);
 
-        Indicator.Params.TypeCase supportedParams();
+        Indicator.Params.TypeCase typeCase();
     }
 
     interface IndicatorIdSupplier extends Supplier<ImmutableList<Integer>> {
@@ -62,8 +62,8 @@ public class IndicatorAdapterRepository {
         }
 
         static IndicatorAdapter create(
-                Ta4jIndicatorSupplier indicatorSupplier,
-                Indicator.Params params, IndicatorIdSupplier indicatorIdSupplier) {
+                Indicator.Params params, Ta4jIndicatorSupplier indicatorSupplier,
+                IndicatorIdSupplier indicatorIdSupplier) {
             return new IndicatorAdapter(indicatorSupplier, indicatorIdSupplier, params);
         }
 
