@@ -1,94 +1,30 @@
 package com.verlumen.tradestar.core.tradehistory.indicators;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Supplier;
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.inject.Inject;
-import com.verlumen.tradestar.protos.indicators.Indicator;
+import com.verlumen.tradestar.core.tradehistory.BarSeriesFactory;
+import com.verlumen.tradestar.protos.candles.Candle;
+import com.verlumen.tradestar.protos.candles.Granularity;
+import com.verlumen.tradestar.protos.indicators.Indicator.Params;
 import org.ta4j.core.BarSeries;
+import org.ta4j.core.Indicator;
 import org.ta4j.core.num.Num;
 
-import java.util.Optional;
-import java.util.Set;
-
-import static com.google.common.base.Functions.identity;
-import static com.google.common.base.MoreObjects.firstNonNull;
-import static com.google.common.collect.ImmutableMap.toImmutableMap;
-
-public class IndicatorAdapterRepository {
-    private final ImmutableMap<Indicator.Params.TypeCase, IndicatorAdapterFactory>
-            adapterFactories;
-
-    @Inject
-    IndicatorAdapterRepository(Set<IndicatorAdapterFactory> adapterFactories) {
-        this.adapterFactories = adapterFactories
-                .stream()
-                .collect(toImmutableMap(
-                        IndicatorAdapterFactory::typeCase, identity()));
+public interface IndicatorAdapterRepository {
+    default IndicatorAdapter get(Params params,
+                                 ImmutableCollection<Candle> candles,
+                                 Granularity granularity) {
+        ImmutableList<Candle> candleList = candles.asList();
+        BarSeries series = BarSeriesFactory.create(granularity, candleList);
+        return get(params, series);
     }
 
-    public IndicatorAdapter get(BarSeries barSeries, Indicator.Params params) {
-        return Optional.ofNullable(adapterFactories.get(params.getTypeCase()))
-                .map(factory -> factory.create(barSeries, params))
-                .orElseThrow(UnsupportedOperationException::new);
-    }
-
-    interface IndicatorAdapterFactory {
-        IndicatorAdapter create(BarSeries barSeries, Indicator.Params params);
-
-        Indicator.Params.TypeCase typeCase();
-    }
+    IndicatorAdapter get(Params params, BarSeries barSeries);
 
     interface IndicatorIdSupplier extends Supplier<ImmutableList<Integer>> {
     }
 
-    interface Ta4jIndicatorSupplier extends Supplier<org.ta4j.core.Indicator<Num>> {
-    }
-
-    public static class IndicatorAdapter {
-        private static final Joiner HYPHEN_JOINER = Joiner.on("-");
-
-        private final IndicatorIdSupplier indicatorIdSupplier;
-        private final Ta4jIndicatorSupplier indicatorSupplier;
-        private final Indicator.Params params;
-
-        private IndicatorAdapter(Ta4jIndicatorSupplier indicatorSupplier,
-                                 IndicatorIdSupplier indicatorIdSupplier,
-                                 Indicator.Params params) {
-            this.indicatorIdSupplier = indicatorIdSupplier;
-            this.indicatorSupplier = indicatorSupplier;
-            this.params = params;
-        }
-
-        static IndicatorAdapter create(
-                Indicator.Params params, Ta4jIndicatorSupplier indicatorSupplier,
-                IndicatorIdSupplier indicatorIdSupplier) {
-            return new IndicatorAdapter(indicatorSupplier, indicatorIdSupplier, params);
-        }
-
-        public Indicator indicator(int index) {
-            double value = ta4jIndicator().getValue(index).doubleValue();
-            return Indicator.newBuilder()
-                    .setName(name())
-                    .setValue(value)
-                    .setParams(params)
-                    .build();
-        }
-
-        public org.ta4j.core.Indicator<Num> ta4jIndicator() {
-            return indicatorSupplier.get();
-        }
-
-        private String name() {
-            ImmutableList<?> indicatorId = firstNonNull(
-                    indicatorIdSupplier.get(), ImmutableList.of());
-            ImmutableList<Object> parts = ImmutableList.builder()
-                    .add(params.getTypeCase().name())
-                    .addAll(indicatorId)
-                    .build();
-            indicatorIdSupplier.get();
-            return HYPHEN_JOINER.join(parts);
-        }
+    interface Ta4jIndicatorSupplier extends Supplier<Indicator<Num>> {
     }
 }
