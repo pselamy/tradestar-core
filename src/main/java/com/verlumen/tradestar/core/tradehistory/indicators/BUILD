@@ -20,3 +20,15 @@ java_library(
         "@tradestar_protos//:indicators_java_proto",
     ],
 )
+
+
+java_library(
+    name = "indicators_module",
+    srcs = ["IndicatorsModule.java"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":indicator_factory",
+        ":adx_indicator_adapter_factory",
+        "@maven//:com_google_inject_guice",
+    ],
+)
