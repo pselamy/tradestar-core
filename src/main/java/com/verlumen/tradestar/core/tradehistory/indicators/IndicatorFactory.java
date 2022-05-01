@@ -14,18 +14,18 @@ import static com.google.common.collect.ImmutableMap.toImmutableMap;
 
 public class IndicatorFactory {
     private final ImmutableMap<Indicator.Params.TypeCase, IndicatorAdapterFactory>
-            indicatorFactories;
+            adapterFactories;
 
     @Inject
-    IndicatorFactory(Set<IndicatorAdapterFactory> indicatorFactories) {
-        this.indicatorFactories = indicatorFactories
+    IndicatorFactory(Set<IndicatorAdapterFactory> adapterFactories) {
+        this.adapterFactories = adapterFactories
                 .stream()
                 .collect(toImmutableMap(
                         IndicatorAdapterFactory::supportedParams, identity()));
     }
 
     public IndicatorAdapter create(BarSeries barSeries, Indicator.Params params) {
-        return Optional.ofNullable(indicatorFactories.get(params.getTypeCase()))
+        return Optional.ofNullable(adapterFactories.get(params.getTypeCase()))
                 .map(factory -> factory.create(barSeries, params))
                 .orElseThrow(UnsupportedOperationException::new);
     }
@@ -36,8 +36,7 @@ public class IndicatorFactory {
         Indicator.Params.TypeCase supportedParams();
     }
 
-    public static class IndicatorAdapter {
-
+    static class IndicatorAdapter {
         private final org.ta4j.core.Indicator<Num> driver;
         private final Indicator.Params params;
 
@@ -48,7 +47,7 @@ public class IndicatorFactory {
             this.params = params;
         }
 
-        public static IndicatorAdapter create(BarSeries barSeries,
+        static IndicatorAdapter create(BarSeries barSeries,
                 Ta4jIndicatorFactory factory, Indicator.Params params) {
             return new IndicatorAdapter(barSeries, factory, params);
         }
