@@ -30,6 +30,19 @@ java_library(
 )
 
 java_library(
+    name = "indicator_adapter_impl",
+    srcs = ["IndicatorAdapterImpl.java"],
+    deps = [
+        ":indicator_adapter",
+        ":indicator_adapter_repository",
+        "@maven//:com_google_guava_guava",
+        "@maven//:com_google_inject_guice",
+        "@maven//:org_ta4j_ta4j_core",
+        "@tradestar_protos//:indicators_java_proto",
+    ],
+)
+
+java_library(
     name = "indicator_adapter_repository",
     srcs = ["IndicatorAdapterRepository.java"],
     visibility = ["//visibility:public"],
