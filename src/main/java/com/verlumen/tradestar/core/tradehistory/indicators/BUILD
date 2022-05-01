@@ -10,6 +10,15 @@ java_library(
 )
 
 java_library(
+    name = "indicator_adapter",
+    srcs = ["IndicatorAdapter.java"],
+    deps = [
+        "@maven//:org_ta4j_ta4j_core",
+        "@tradestar_protos//:indicators_java_proto",
+    ],
+)
+
+java_library(
     name = "indicator_adapter_repository",
     srcs = ["IndicatorAdapterRepository.java"],
     visibility = ["//visibility:public"],
