@@ -24,6 +24,7 @@ java_library(
     name = "indicator_adapter_repository_impl",
     srcs = ["IndicatorAdapterRepositoryImpl.java"],
     deps = [
+        ":indicator_adapter_repository",
         "@maven//:com_google_guava_guava",
         "@maven//:com_google_inject_guice",
         "@maven//:org_ta4j_ta4j_core",
