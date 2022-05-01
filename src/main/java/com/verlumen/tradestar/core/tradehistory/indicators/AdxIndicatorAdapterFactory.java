@@ -1,8 +1,7 @@
 package com.verlumen.tradestar.core.tradehistory.indicators;
 
 import com.google.common.collect.ImmutableList;
-import com.verlumen.tradestar.core.tradehistory.indicators.IndicatorAdapterRepository.IndicatorAdapter;
-import com.verlumen.tradestar.core.tradehistory.indicators.IndicatorAdapterRepository.IndicatorAdapterFactory;
+
 import com.verlumen.tradestar.protos.indicators.Indicator;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.indicators.adx.ADXIndicator;
@@ -19,7 +18,7 @@ class AdxIndicatorAdapterFactory implements IndicatorAdapterFactory {
         checkArgument(params.hasAdx());
         int barCount = max(params.getAdx().getBarCount(), DEFAULT_BAR_COUNT);
         int diBarCount = max(params.getAdx().getDiBarCount(), barCount);
-        return IndicatorAdapter.create(params,
+        return IndicatorAdapterImpl.create(params,
                 () -> new ADXIndicator(barSeries, barCount, diBarCount),
                 () -> ImmutableList.of(barCount, diBarCount));
     }
