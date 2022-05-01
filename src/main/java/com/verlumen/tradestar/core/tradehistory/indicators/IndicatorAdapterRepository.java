@@ -49,15 +49,15 @@ public class IndicatorAdapterRepository {
     public static class IndicatorAdapter {
         private static final Joiner HYPHEN_JOINER = Joiner.on("-");
 
-        private final org.ta4j.core.Indicator<Num> driver;
         private final IndicatorIdSupplier indicatorIdSupplier;
+        private final Ta4jIndicatorSupplier indicatorSupplier;
         private final Indicator.Params params;
 
         private IndicatorAdapter(Ta4jIndicatorSupplier indicatorSupplier,
                                  IndicatorIdSupplier indicatorIdSupplier,
                                  Indicator.Params params) {
-            this.driver = indicatorSupplier.get();
             this.indicatorIdSupplier = indicatorIdSupplier;
+            this.indicatorSupplier = indicatorSupplier;
             this.params = params;
         }
 
@@ -68,12 +68,16 @@ public class IndicatorAdapterRepository {
         }
 
         public Indicator indicator(int index) {
-            double value = driver.getValue(index).doubleValue();
+            double value = ta4jIndicator().getValue(index).doubleValue();
             return Indicator.newBuilder()
                     .setName(name())
                     .setValue(value)
                     .setParams(params)
                     .build();
+        }
+
+        public org.ta4j.core.Indicator<Num> ta4jIndicator() {
+            return indicatorSupplier.get();
         }
 
         private String name() {
