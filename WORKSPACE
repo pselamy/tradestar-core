@@ -17,7 +17,7 @@ rules_proto_toolchains()
 
 git_repository(
     name = "tradestar_protos",
-    commit = "24210b5698858a91e6e583a82e804fa11b11bcb9",
+    commit = "00fe4c958a1ff8a18892a47b6b4d0445d5eb9d6d",
     remote = "https://github.com/pselamy/tradestar-protos",
     shallow_since = "1651341184 -0500",
 )
@@ -47,6 +47,7 @@ load("@rules_jvm_external//:defs.bzl", "maven_install")
 
 maven_install(
     artifacts = [
+        "com.google.inject:guice:5.1.0",
         "com.google.guava:guava:31.1-jre",
         "org.apache.commons:commons-lang3:3.12.0",
         "org.ta4j:ta4j-core:0.14",
