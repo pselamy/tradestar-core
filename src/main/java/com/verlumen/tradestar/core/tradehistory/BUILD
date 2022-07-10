@@ -17,6 +17,7 @@ java_library(
     deps = [
         ":bar_factory",
         ":granularity_spec",
+        "//src/main/java/com/verlumen/tradestar/candles:granularity_spec",
         "@maven//:com_google_guava_guava",
         "@maven//:org_apache_commons_commons_lang3",
         "@maven//:org_ta4j_ta4j_core",
