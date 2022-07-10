@@ -30,7 +30,7 @@ public enum GranularitySpec {
         return Granularity.valueOf(name());
     }
     
-    public int minutes() {
+    public long minutes() {
         return duration.toMinutes();
     }
 }
