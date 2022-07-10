@@ -1,6 +1,7 @@
 package com.verlumen.tradestar.core.tradehistory;
 
 import com.google.common.collect.ImmutableList;
+import com.verlumen.tradestar.core.candles.GranularitySpec;
 import com.verlumen.tradestar.protos.candles.Candle;
 import com.verlumen.tradestar.protos.candles.Granularity;
 import org.apache.commons.lang3.tuple.Pair;
