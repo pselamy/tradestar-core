@@ -25,4 +25,12 @@ public enum GranularitySpec {
     public Duration duration() {
         return duration;
     }
+    
+    public Granularity granularity() {
+        return Granularity.valueOf(name());
+    }
+    
+    public int minutes() {
+        return duration.toMinutes();
+    }
 }
