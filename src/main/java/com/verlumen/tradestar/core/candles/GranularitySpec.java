@@ -33,4 +33,8 @@ public enum GranularitySpec {
     public long minutes() {
         return duration.toMinutes();
     }
+    
+    public long seconds() {
+        return duration.toSeconds();
+    }
 }
