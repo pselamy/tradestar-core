@@ -18,7 +18,7 @@ public enum GranularitySpec {
         this.duration = Duration.ofSeconds(seconds);
     }
 
-    static GranularitySpec fromGranularity(Granularity granularity) {
+    public static GranularitySpec fromGranularity(Granularity granularity) {
         return GranularitySpec.valueOf(granularity.name());
     }
 
