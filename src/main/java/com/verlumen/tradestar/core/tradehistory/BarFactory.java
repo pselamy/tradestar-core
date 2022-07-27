@@ -12,8 +12,8 @@ import java.time.ZonedDateTime;
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.ta4j.core.num.DecimalNum.valueOf;
 
-class BarFactory {
-    static Bar create(Duration duration, Candle candle) {
+public class BarFactory {
+    public static Bar create(Duration duration, Candle candle) {
         checkArgument(candle.hasStart());
         checkArgument(candle.getOpen() > 0L);
         checkArgument(candle.getHigh() > 0L);
