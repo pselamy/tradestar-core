@@ -25,7 +25,7 @@ git_repository(
     name = "contrib_rules_jvm",
     commit = "f7c08ec6d73ef691b03f843e0c2c3dbe766df584",
     remote = "https://github.com/bazel-contrib/rules_jvm",
-    shallow_since = "1659219740 -0400",
+    shallow_since = "1642674503 +0000",
 )
 
 load("@contrib_rules_jvm//:repositories.bzl", "contrib_rules_jvm_deps")
@@ -70,5 +70,5 @@ git_repository(
     name = "tradestar_protos",
     commit = "bf2083ef32c1b581bfade9b7e1ffcb393e85002b",
     remote = "https://github.com/pselamy/tradestar-protos",
-    shallow_since = "1657498763 -0400",
+    shallow_since = "1659219740 -0400",
 )
