@@ -22,6 +22,9 @@ git_repository(
     shallow_since = "1657498763 -0400",
 )
 
+######################
+#### JAVA SUPPORT ####
+######################
 git_repository(
     name = "contrib_rules_jvm",
     commit = "f7c08ec6d73ef691b03f843e0c2c3dbe766df584",
@@ -51,6 +54,11 @@ maven_install(
         "com.google.guava:guava:31.1-jre",
         "org.apache.commons:commons-lang3:3.12.0",
         "org.ta4j:ta4j-core:0.14",
+        # Unit Test Dependencies
+        "com.google.inject.extensions:guice-testlib:5.1.0",
+        "com.google.testparameterinjector:test-parameter-injector:1.8",
+        "com.google.truth:truth:1.1.3",
+        "com.google.truth.extensions:truth-java8-extension:1.1.3",
     ],
     repositories = [
         "https://repo1.maven.org/maven2",
