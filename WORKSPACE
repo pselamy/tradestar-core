@@ -50,6 +50,8 @@ load("@rules_jvm_external//:defs.bzl", "maven_install")
 
 maven_install(
     artifacts = [
+        "com.google.auto.value:auto-value:1.9",
+        "com.google.auto.value:auto-value-annotations:1.9",
         "com.google.inject:guice:5.1.0",
         "com.google.guava:guava:31.1-jre",
         "org.apache.commons:commons-lang3:3.12.0",
