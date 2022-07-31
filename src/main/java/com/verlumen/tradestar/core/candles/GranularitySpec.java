@@ -16,7 +16,7 @@ public enum GranularitySpec {
 
   private static final EnumSet<Granularity> UNSUPPORTED_GRANULARITIES =
       EnumSet.of(Granularity.UNRECOGNIZED, Granularity.UNSPECIFIED);
-  public static final ImmutableSet<Granularity> SUPPORTED_GRANULARITIES =
+  private static final ImmutableSet<Granularity> SUPPORTED_GRANULARITIES =
       ImmutableSet.copyOf(EnumSet.complementOf(UNSUPPORTED_GRANULARITIES));
   private final Duration duration;
 
@@ -26,6 +26,10 @@ public enum GranularitySpec {
 
   public static GranularitySpec fromGranularity(Granularity granularity) {
     return GranularitySpec.valueOf(granularity.name());
+  }
+
+  public static boolean isSupported(Granularity granularity) {
+    return SUPPORTED_GRANULARITIES.contains(granularity);
   }
 
   public Duration duration() {
