@@ -1,19 +1,18 @@
 package com.verlumen.tradestar.core.candles;
 
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.TruthJUnit.assume;
+import static java.util.Objects.requireNonNull;
+import static org.junit.Assert.assertThrows;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.testing.junit.testparameterinjector.TestParameter;
 import com.google.testing.junit.testparameterinjector.TestParameterInjector;
 import com.verlumen.tradestar.protos.candles.Granularity;
+import java.time.Duration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.time.Duration;
-
-import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.TruthJUnit.assume;
-import static java.util.Objects.requireNonNull;
-import static org.junit.Assert.assertThrows;
 
 @RunWith(TestParameterInjector.class)
 public class GranularitySpecTest {
