@@ -24,7 +24,7 @@ public class CandleFactory {
     checkArgument(!params.trades().isEmpty());
     checkArgument(GranularitySpec.isSupported(params.granularity()));
 
-    ImmutableList<ExchangeTrade> trades = sortTrades(params.trades()).asList();
+    ImmutableList<ExchangeTrade> trades = sortTrades(params.trades());
     ExchangeTrade firstTrade = trades.get(0);
     ExchangeTrade lastTrade = trades.get(trades.size() - 1);
     GranularitySpec granularitySpec = GranularitySpec.fromGranularity(params.granularity());
@@ -78,10 +78,11 @@ public class CandleFactory {
     return builder.build();
   }
 
-  private static ImmutableSet<ExchangeTrade> sortTrades(ImmutableSet<ExchangeTrade> trades) {
+  private static ImmutableList<ExchangeTrade> sortTrades(ImmutableSet<ExchangeTrade> trades) {
     return trades.stream()
         .sorted(comparing(trade -> trade.getTimestamp().getSeconds()))
-        .collect(toImmutableSet());
+        .distinct()
+        .collect(toImmutableList());
   }
 
   private static Instant getStartTime(GranularitySpec granularitySpec, ExchangeTrade firstTrade) {
