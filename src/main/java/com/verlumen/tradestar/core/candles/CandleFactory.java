@@ -36,7 +36,7 @@ public class CandleFactory {
     return createCandle(startTime, trades);
   }
 
-  public static Candle mergeCandles(MergeParams params) {
+  public static Candle merge(MergeParams params) {
     ImmutableList<Candle> candles = params.candles().asList();
     Candle firstCandle = candles.get(0);
     Candle lastCandle = candles.get(candles.size() - 1);
@@ -145,7 +145,11 @@ public class CandleFactory {
           sortedCandles.stream()
               .map(candle -> candle.getStart().getSeconds())
               .collect(toImmutableSet());
-      checkArgument(expectedStartTimes.equals(actualStartTimes));
+      checkArgument(
+          expectedStartTimes.equals(actualStartTimes),
+          "%s != %s",
+          expectedStartTimes,
+          actualStartTimes);
       return sortedCandles;
     }
 
