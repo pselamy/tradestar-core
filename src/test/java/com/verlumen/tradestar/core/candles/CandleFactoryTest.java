@@ -1,16 +1,17 @@
 package com.verlumen.tradestar.core.candles;
 
-import static com.google.common.truth.Truth.assertThat;
-
 import com.google.common.collect.ImmutableList;
 import com.google.testing.junit.testparameterinjector.TestParameter;
 import com.google.testing.junit.testparameterinjector.TestParameterInjector;
 import com.verlumen.tradestar.protos.candles.Candle;
 import com.verlumen.tradestar.protos.candles.Granularity;
 import com.verlumen.tradestar.protos.trading.ExchangeTrade;
-import java.time.Instant;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.time.Instant;
+
+import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(TestParameterInjector.class)
 public class CandleFactoryTest {
@@ -21,13 +22,7 @@ public class CandleFactoryTest {
   }
 
   private static Candle newCandle(
-      Granularity granularity,
-      double open,
-      double high,
-      double low,
-      double close,
-      double volume,
-      Instant start) {
+      double open, double high, double low, double close, double volume, Instant start) {
     Candle.Builder builder =
         Candle.newBuilder()
             .setOpen(open)
@@ -50,10 +45,18 @@ public class CandleFactoryTest {
 
   @SuppressWarnings("unused")
   private enum CreateTestCase {
-    NO_CANDLES_ONE_TRADE(
+    NO_CANDLES_ONE_TRADE_ONE_MINUTE(
         Granularity.ONE_MINUTE,
         ImmutableList.of(newTrade(1, 1, 61)),
-        newCandle(Granularity.ONE_MINUTE, 1.0, 1.0, 1.0, 1.0, 1.0, Instant.ofEpochSecond(60)));
+        newCandle(1.0, 1.0, 1.0, 1.0, 1.0, Instant.ofEpochSecond(60))),
+    NO_CANDLES_ONE_TRADE_FIVE_MINUTES(
+        Granularity.FIVE_MINUTES,
+        ImmutableList.of(newTrade(1, 1, 1234)),
+        newCandle(1.0, 1.0, 1.0, 1.0, 1.0, Instant.ofEpochSecond(1200))),
+    NO_CANDLES_TWO_TRADES_ONE_MINUTE_SAME_MINUTE(
+        Granularity.ONE_MINUTE,
+        ImmutableList.of(newTrade(1, 1, 61), newTrade(2, 1, 62)),
+        newCandle(1.0, 2.0, 1.0, 2.0, 2.0, Instant.ofEpochSecond(60)));
 
     private final CandleFactory.CreateParams params;
     private final Candle expected;
