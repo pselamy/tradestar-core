@@ -18,7 +18,7 @@ import org.ta4j.core.BaseBarSeriesBuilder;
 
 public class BarSeriesFactory {
   public static BarSeries create(Granularity granularity, ImmutableList<Candle> candles) {
-    GranularitySpec granularitySpec = GranularitySpec.fromGranularity(granularity);
+    GranularitySpec granularitySpec = GranularitySpec.create(granularity);
     checkArgument(candlesAreConforming(granularitySpec, candles));
     Duration duration = granularitySpec.duration();
     return create(duration, candles);
