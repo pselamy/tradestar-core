@@ -12,19 +12,16 @@ import org.ta4j.core.Indicator;
 import org.ta4j.core.num.Num;
 
 public interface IndicatorAdapterRepository {
-    default IndicatorAdapter get(Params params,
-                                 ImmutableCollection<Candle> candles,
-                                 Granularity granularity) {
-        ImmutableList<Candle> candleList = candles.asList();
-        BarSeries series = BarSeriesFactory.create(granularity, candleList);
-        return get(params, series);
-    }
+  default IndicatorAdapter get(
+      Params params, ImmutableCollection<Candle> candles, Granularity granularity) {
+    ImmutableList<Candle> candleList = candles.asList();
+    BarSeries series = BarSeriesFactory.create(granularity, candleList);
+    return get(params, series);
+  }
 
-    IndicatorAdapter get(Params params, BarSeries barSeries);
+  IndicatorAdapter get(Params params, BarSeries barSeries);
 
-    interface IndicatorIdSupplier extends Supplier<ImmutableList<Integer>> {
-    }
+  interface IndicatorIdSupplier extends Supplier<ImmutableList<Integer>> {}
 
-    interface Ta4jIndicatorSupplier extends Supplier<Indicator<Num>> {
-    }
+  interface Ta4jIndicatorSupplier extends Supplier<Indicator<Num>> {}
 }

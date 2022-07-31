@@ -4,7 +4,7 @@ import com.verlumen.tradestar.protos.indicators.Indicator;
 import org.ta4j.core.num.Num;
 
 public interface IndicatorAdapter {
-    Indicator indicator(int index);
+  Indicator indicator(int index);
 
-    org.ta4j.core.Indicator<Num> ta4jIndicator();
+  org.ta4j.core.Indicator<Num> ta4jIndicator();
 }

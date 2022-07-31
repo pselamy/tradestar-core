@@ -5,17 +5,15 @@ import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
 
 public class IndicatorsModule extends AbstractModule {
-    private static final ImmutableSet<Class<? extends IndicatorAdapterFactory>>
-            ADAPTER_FACTORIES = ImmutableSet.of(AdxIndicatorAdapterFactory.class);
+  private static final ImmutableSet<Class<? extends IndicatorAdapterFactory>> ADAPTER_FACTORIES =
+      ImmutableSet.of(AdxIndicatorAdapterFactory.class);
 
-    @Override
-    protected void configure() {
-        Multibinder<IndicatorAdapterFactory> indicatorAdapterFactoryBinder =
-                Multibinder.newSetBinder(binder(),
-                        IndicatorAdapterFactory.class);
-        ADAPTER_FACTORIES.forEach(adapter -> indicatorAdapterFactoryBinder.addBinding()
-                .to(adapter));
+  @Override
+  protected void configure() {
+    Multibinder<IndicatorAdapterFactory> indicatorAdapterFactoryBinder =
+        Multibinder.newSetBinder(binder(), IndicatorAdapterFactory.class);
+    ADAPTER_FACTORIES.forEach(adapter -> indicatorAdapterFactoryBinder.addBinding().to(adapter));
 
-        bind(IndicatorAdapterRepository.class).to(IndicatorAdapterRepositoryImpl.class);
-    }
+    bind(IndicatorAdapterRepository.class).to(IndicatorAdapterRepositoryImpl.class);
+  }
 }
