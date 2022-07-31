@@ -1,7 +1,10 @@
 package com.verlumen.tradestar.core.candles;
 
+import com.google.common.collect.ImmutableSet;
 import com.verlumen.tradestar.protos.candles.Granularity;
+
 import java.time.Duration;
+import java.util.EnumSet;
 
 public enum GranularitySpec {
   ONE_MINUTE(60),
@@ -11,6 +14,10 @@ public enum GranularitySpec {
   SIX_HOURS(21600),
   ONE_DAY(86400);
 
+  private static final EnumSet<Granularity> UNSUPPORTED_GRANULARITIES =
+      EnumSet.of(Granularity.UNRECOGNIZED, Granularity.UNSPECIFIED);
+  public static final ImmutableSet<Granularity> SUPPORTED_GRANULARITIES =
+      ImmutableSet.copyOf(EnumSet.complementOf(UNSUPPORTED_GRANULARITIES));
   private final Duration duration;
 
   GranularitySpec(int seconds) {

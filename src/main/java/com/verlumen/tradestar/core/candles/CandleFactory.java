@@ -15,7 +15,7 @@ import java.util.stream.DoubleStream;
 public class CandleFactory {
   public static Candle create(CreateParams params) {
     checkArgument(!params.trades().isEmpty());
-    checkArgument(Constants.SUPPORTED_GRANULARITIES.contains(params.granularity()));
+    checkArgument(GranularitySpec.SUPPORTED_GRANULARITIES.contains(params.granularity()));
 
     ExchangeTrade firstTrade = params.trades().get(0);
     ExchangeTrade lastTrade = params.trades().get(params.trades().size() - 1);
