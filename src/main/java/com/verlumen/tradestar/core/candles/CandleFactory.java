@@ -1,5 +1,12 @@
 package com.verlumen.tradestar.core.candles;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.collect.ImmutableList.toImmutableList;
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
+import static com.google.common.collect.MoreCollectors.onlyElement;
+import static java.time.Instant.ofEpochSecond;
+import static java.util.Comparator.comparing;
+
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -7,17 +14,9 @@ import com.google.common.math.Stats;
 import com.verlumen.tradestar.protos.candles.Candle;
 import com.verlumen.tradestar.protos.candles.Granularity;
 import com.verlumen.tradestar.protos.trading.ExchangeTrade;
-
 import java.time.Instant;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.collect.ImmutableList.toImmutableList;
-import static com.google.common.collect.ImmutableSet.toImmutableSet;
-import static com.google.common.collect.MoreCollectors.onlyElement;
-import static java.time.Instant.ofEpochSecond;
-import static java.util.Comparator.comparing;
 
 public class CandleFactory {
   public static Candle create(CreateParams params) {
