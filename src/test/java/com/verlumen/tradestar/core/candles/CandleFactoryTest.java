@@ -84,8 +84,7 @@ public class CandleFactoryTest {
     TWO_TRADES_FIVE_MINUTES(
         Granularity.FIVE_MINUTES,
         ImmutableList.of(newTrade(2, 1, 1234)),
-        newCandle(2.0, 2.0, 2.0, 2.0, 1.0, 1200)),
-    ;
+        newCandle(2.0, 2.0, 2.0, 2.0, 1.0, 1200))    ;
 
     private final CandleFactory.CreateParams params;
     private final Candle expected;
