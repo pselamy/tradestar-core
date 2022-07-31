@@ -5,16 +5,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.math.Stats;
 import com.verlumen.tradestar.protos.candles.Candle;
 import com.verlumen.tradestar.protos.candles.Granularity;
-import com.verlumen.tradestar.protos.instruments.Currency;
-import com.verlumen.tradestar.protos.instruments.CurrencyPair;
-import com.verlumen.tradestar.protos.instruments.Instrument;
 import com.verlumen.tradestar.protos.trading.ExchangeTrade;
 
 import java.time.Instant;
 import java.util.stream.DoubleStream;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.collect.MoreCollectors.onlyElement;
 import static java.time.Instant.ofEpochSecond;
 
 public class CandleFactory {
@@ -22,12 +18,6 @@ public class CandleFactory {
     checkArgument(!params.trades().isEmpty());
     checkArgument(Constants.SUPPORTED_GRANULARITIES.contains(params.granularity()));
 
-    Instrument instrument =
-        params.trades().stream()
-            .map(ExchangeTrade::getInstrument)
-            .distinct()
-            .collect(onlyElement());
-    checkArgument(!Instrument.getDefaultInstance().equals(instrument));
     ExchangeTrade firstTrade = params.trades().get(0);
     ExchangeTrade lastTrade = params.trades().get(params.trades().size() - 1);
     GranularitySpec granularitySpec = GranularitySpec.fromGranularity(params.granularity());
@@ -35,12 +25,11 @@ public class CandleFactory {
     Instant endTime = startTime.plus(granularitySpec.duration());
     Instant lastTradeTime = ofEpochSecond(lastTrade.getTimestamp().getSeconds());
     checkArgument(lastTradeTime.isBefore(endTime));
-    return create(instrument, startTime, params.trades());
+    return create(startTime, params.trades());
   }
 
   @SuppressWarnings("UnstableApiUsage")
-  private static Candle create(
-      Instrument instrument, Instant startTime, ImmutableList<ExchangeTrade> trades) {
+  private static Candle create(Instant startTime, ImmutableList<ExchangeTrade> trades) {
     ExchangeTrade firstTrade = trades.get(0);
     ExchangeTrade lastTrade = trades.get(trades.size() - 1);
     DoubleStream prices =
@@ -51,8 +40,6 @@ public class CandleFactory {
 
     Candle.Builder builder =
         Candle.newBuilder()
-            .setInstrument(instrument)
-            .setGranularity(Granularity.ONE_MINUTE)
             .setOpen(firstTrade.getPrice())
             .setHigh(priceStats.max())
             .setLow(priceStats.min())
