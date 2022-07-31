@@ -1,22 +1,24 @@
 package com.verlumen.tradestar.core.candles;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.collect.ImmutableList.toImmutableList;
-import static com.google.common.collect.ImmutableSet.toImmutableSet;
-import static com.google.common.collect.MoreCollectors.onlyElement;
-import static java.time.Instant.ofEpochSecond;
-import static java.util.Comparator.comparing;
-
 import com.google.auto.value.AutoValue;
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.math.Stats;
 import com.verlumen.tradestar.protos.candles.Candle;
 import com.verlumen.tradestar.protos.candles.Granularity;
 import com.verlumen.tradestar.protos.trading.ExchangeTrade;
+
 import java.time.Instant;
+import java.util.function.Function;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.collect.ImmutableList.toImmutableList;
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
+import static java.time.Instant.ofEpochSecond;
+import static java.util.Comparator.comparing;
 
 public class CandleFactory {
   public static Candle create(CreateParams params) {
@@ -34,23 +36,18 @@ public class CandleFactory {
     return createCandle(startTime, trades);
   }
 
-  public static Candle mergeCandles(MergeParams params) {
+  public static Candle merge(MergeParams params) {
     ImmutableList<Candle> candles = params.candles().asList();
     Candle firstCandle = candles.get(0);
     Candle lastCandle = candles.get(candles.size() - 1);
 
     double volume = params.candles().stream().mapToDouble(Candle::getVolume).sum();
+    //noinspection UnstableApiUsage
     return Candle.newBuilder()
         .setStart(firstCandle.getStart())
         .setOpen(firstCandle.getOpen())
-        .setHigh(
-            candles.stream().mapToDouble(Candle::getHigh).max().stream()
-                .boxed()
-                .collect(onlyElement()))
-        .setLow(
-            candles.stream().mapToDouble(Candle::getLow).min().stream()
-                .boxed()
-                .collect(onlyElement()))
+        .setHigh(aggregateCandleAttribute(Candle::getHigh, Stats::max).apply(candles))
+        .setLow(aggregateCandleAttribute(Candle::getLow, Stats::min).apply(candles))
         .setClose(lastCandle.getClose())
         .setVolume(volume)
         .build();
@@ -89,6 +86,14 @@ public class CandleFactory {
     long secondsAfterStart = firstTradeSeconds % granularitySpec.seconds();
     long startTimeSeconds = firstTradeSeconds - secondsAfterStart;
     return ofEpochSecond(startTimeSeconds);
+  }
+
+  @SuppressWarnings("UnstableApiUsage")
+  private static Function<ImmutableCollection<Candle>, Double> aggregateCandleAttribute(
+      Function<Candle, Double> getAttribute, Function<Stats, Double> getAggregate) {
+    return candles ->
+        getAggregate.apply(
+            Stats.of(candles.stream().map(getAttribute).mapToDouble(Double::valueOf)));
   }
 
   @AutoValue
@@ -140,7 +145,11 @@ public class CandleFactory {
           sortedCandles.stream()
               .map(candle -> candle.getStart().getSeconds())
               .collect(toImmutableSet());
-      checkArgument(expectedStartTimes.equals(actualStartTimes));
+      checkArgument(
+          expectedStartTimes.equals(actualStartTimes),
+          "%s != %s",
+          expectedStartTimes,
+          actualStartTimes);
       return sortedCandles;
     }
 
