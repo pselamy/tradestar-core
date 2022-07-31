@@ -3,7 +3,6 @@ java_library(
     srcs = ["CandleFactory.java"],
     visibility = ["//visibility:public"],
     deps = [
-        ":constants",
         ":granularity_spec",
         "//:autovalue",
         "@maven//:com_google_guava_guava",
@@ -14,20 +13,11 @@ java_library(
 )
 
 java_library(
-    name = "constants",
-    srcs = ["Constants.java"],
-    visibility = ["//visibility:public"],
-    deps = [
-        "@maven//:com_google_guava_guava",
-        "@tradestar_protos//:candles_java_proto",
-    ],
-)
-
-java_library(
     name = "granularity_spec",
     srcs = ["GranularitySpec.java"],
     visibility = ["//visibility:public"],
     deps = [
+        "@maven//:com_google_guava_guava",
         "@tradestar_protos//:candles_java_proto",
     ],
 )
