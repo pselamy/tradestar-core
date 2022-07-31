@@ -2,6 +2,7 @@ package com.verlumen.tradestar.core.candles;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.math.Stats;
 import com.verlumen.tradestar.protos.candles.Candle;
 import com.verlumen.tradestar.protos.candles.Granularity;
@@ -9,9 +10,12 @@ import com.verlumen.tradestar.protos.trading.ExchangeTrade;
 
 import java.time.Instant;
 import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.ImmutableList.toImmutableList;
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
+import static com.google.common.collect.MoreCollectors.onlyElement;
 import static java.time.Instant.ofEpochSecond;
 import static java.util.Comparator.comparing;
 
@@ -20,7 +24,7 @@ public class CandleFactory {
     checkArgument(!params.trades().isEmpty());
     checkArgument(GranularitySpec.isSupported(params.granularity()));
 
-    ImmutableList<ExchangeTrade> trades = sortTrades(params.trades());
+    ImmutableList<ExchangeTrade> trades = sortTrades(params.trades()).asList();
     ExchangeTrade firstTrade = trades.get(0);
     ExchangeTrade lastTrade = trades.get(trades.size() - 1);
     GranularitySpec granularitySpec = GranularitySpec.fromGranularity(params.granularity());
@@ -28,34 +32,56 @@ public class CandleFactory {
     Instant endTime = startTime.plus(granularitySpec.duration());
     Instant lastTradeTime = ofEpochSecond(lastTrade.getTimestamp().getSeconds());
     checkArgument(lastTradeTime.isBefore(endTime));
-    return create(startTime, trades);
+    return createCandle(startTime, trades);
+  }
+
+  public static Candle mergeCandles(MergeParams params) {
+    ImmutableList<Candle> candles = params.candles().asList();
+    Candle firstCandle = candles.get(0);
+    Candle lastCandle = candles.get(candles.size() - 1);
+
+    double volume = params.candles().stream().mapToDouble(Candle::getVolume).sum();
+    return Candle.newBuilder()
+        .setStart(firstCandle.getStart())
+        .setOpen(firstCandle.getOpen())
+        .setHigh(
+            candles.stream().mapToDouble(Candle::getHigh).max().stream()
+                .boxed()
+                .collect(onlyElement()))
+        .setLow(
+            candles.stream().mapToDouble(Candle::getLow).min().stream()
+                .boxed()
+                .collect(onlyElement()))
+        .setClose(lastCandle.getClose())
+        .setVolume(volume)
+        .build();
   }
 
   @SuppressWarnings("UnstableApiUsage")
-  private static Candle create(Instant startTime, ImmutableList<ExchangeTrade> trades) {
+  private static Candle createCandle(Instant startTime, ImmutableList<ExchangeTrade> trades) {
     ExchangeTrade firstTrade = trades.get(0);
     ExchangeTrade lastTrade = trades.get(trades.size() - 1);
     DoubleStream prices =
-            trades.stream().map(ExchangeTrade::getPrice).mapToDouble(Double::doubleValue);
+        trades.stream().map(ExchangeTrade::getPrice).mapToDouble(Double::doubleValue);
 
     Stats priceStats = Stats.of(prices);
     double volume = trades.stream().mapToDouble(ExchangeTrade::getVolume).sum();
 
     Candle.Builder builder =
-            Candle.newBuilder()
-                    .setOpen(firstTrade.getPrice())
-                    .setHigh(priceStats.max())
-                    .setLow(priceStats.min())
-                    .setClose(lastTrade.getPrice())
-                    .setVolume(volume);
+        Candle.newBuilder()
+            .setOpen(firstTrade.getPrice())
+            .setHigh(priceStats.max())
+            .setLow(priceStats.min())
+            .setClose(lastTrade.getPrice())
+            .setVolume(volume);
     builder.getStartBuilder().setSeconds(startTime.getEpochSecond());
     return builder.build();
   }
 
-  private static ImmutableList<ExchangeTrade> sortTrades(ImmutableList<ExchangeTrade> trades) {
+  private static ImmutableSet<ExchangeTrade> sortTrades(ImmutableSet<ExchangeTrade> trades) {
     return trades.stream()
         .sorted(comparing(trade -> trade.getTimestamp().getSeconds()))
-        .collect(toImmutableList());
+        .collect(toImmutableSet());
   }
 
   private static Instant getStartTime(GranularitySpec granularitySpec, ExchangeTrade firstTrade) {
@@ -73,7 +99,7 @@ public class CandleFactory {
 
     abstract Granularity granularity();
 
-    abstract ImmutableList<ExchangeTrade> trades();
+    abstract ImmutableSet<ExchangeTrade> trades();
 
     @AutoValue.Builder
     public abstract static class Builder {
@@ -83,5 +109,41 @@ public class CandleFactory {
 
       public abstract CreateParams build();
     }
+  }
+
+  @AutoValue
+  public abstract static class MergeParams {
+    public static MergeParams create(
+        ImmutableSet<Candle> candles, Granularity fromGranularity, Granularity toGranularity) {
+      GranularitySpec fromSpec = GranularitySpec.fromGranularity(fromGranularity);
+      GranularitySpec toSpec = GranularitySpec.fromGranularity(toGranularity);
+      checkArgument(toSpec.minutes() % fromSpec.minutes() == 0);
+      checkArgument(candles.size() == toSpec.minutes() / (fromSpec.minutes()));
+
+      ImmutableList<Candle> sortedCandles = getSortedCandles(candles, fromSpec);
+      return new AutoValue_CandleFactory_MergeParams(ImmutableSet.copyOf(sortedCandles));
+    }
+
+    private static ImmutableList<Candle> getSortedCandles(
+        ImmutableSet<Candle> candles, GranularitySpec fromSpec) {
+      ImmutableList<Candle> sortedCandles =
+          candles.stream()
+              .sorted(comparing(candle -> candle.getStart().getSeconds()))
+              .collect(toImmutableList());
+
+      ImmutableSet<Long> expectedStartTimes =
+          Stream.iterate(
+                  sortedCandles.get(0).getStart().getSeconds(), start -> start + fromSpec.seconds())
+              .limit(sortedCandles.size())
+              .collect(toImmutableSet());
+      ImmutableSet<Long> actualStartTimes =
+          sortedCandles.stream()
+              .map(candle -> candle.getStart().getSeconds())
+              .collect(toImmutableSet());
+      checkArgument(expectedStartTimes.equals(actualStartTimes));
+      return sortedCandles;
+    }
+
+    abstract ImmutableSet<Candle> candles();
   }
 }
