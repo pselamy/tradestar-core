@@ -1,5 +1,8 @@
 package com.verlumen.tradestar.core.candles;
 
+import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertThrows;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.testing.junit.testparameterinjector.TestParameter;
@@ -7,13 +10,9 @@ import com.google.testing.junit.testparameterinjector.TestParameterInjector;
 import com.verlumen.tradestar.protos.candles.Candle;
 import com.verlumen.tradestar.protos.candles.Granularity;
 import com.verlumen.tradestar.protos.trading.ExchangeTrade;
+import java.util.function.Supplier;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.util.function.Supplier;
-
-import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.assertThrows;
 
 @RunWith(TestParameterInjector.class)
 public class CandleFactoryTest {
