@@ -27,7 +27,7 @@ public class CandleFactory {
     ImmutableList<ExchangeTrade> trades = sortTrades(params.trades());
     ExchangeTrade firstTrade = trades.get(0);
     ExchangeTrade lastTrade = trades.get(trades.size() - 1);
-    GranularitySpec granularitySpec = GranularitySpec.fromGranularity(params.granularity());
+    GranularitySpec granularitySpec = GranularitySpec.create(params.granularity());
     Instant startTime = getStartTime(granularitySpec, firstTrade);
     Instant endTime = startTime.plus(granularitySpec.duration());
     Instant lastTradeTime = ofEpochSecond(lastTrade.getTimestamp().getSeconds());
@@ -119,8 +119,8 @@ public class CandleFactory {
   public abstract static class MergeParams {
     public static MergeParams create(
         ImmutableSet<Candle> candles, Granularity fromGranularity, Granularity toGranularity) {
-      GranularitySpec fromSpec = GranularitySpec.fromGranularity(fromGranularity);
-      GranularitySpec toSpec = GranularitySpec.fromGranularity(toGranularity);
+      GranularitySpec fromSpec = GranularitySpec.create(fromGranularity);
+      GranularitySpec toSpec = GranularitySpec.create(toGranularity);
       checkArgument(toSpec.minutes() % fromSpec.minutes() == 0);
       checkArgument(candles.size() == toSpec.minutes() / (fromSpec.minutes()));
 
@@ -146,9 +146,9 @@ public class CandleFactory {
               .collect(toImmutableSet());
       checkArgument(
           expectedStartTimes.equals(actualStartTimes),
-          "%s != %s",
-          expectedStartTimes,
-          actualStartTimes);
+          "actual: %s\nexpected: %s",
+          actualStartTimes,
+          expectedStartTimes);
       return sortedCandles;
     }
 
