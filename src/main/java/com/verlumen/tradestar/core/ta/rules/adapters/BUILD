@@ -13,7 +13,7 @@ java_library(
 
 java_library(
     name = "adx_rule_adapter",
-    srcs = ["AdxRuleRuleAdapter.java"],
+    srcs = ["AdxRuleAdapter.java"],
     visibility = ["//src/test/java:__subpackages__"],
     deps = [
         "//src/main/java/com/verlumen/tradestar/core/ta/indicators:indicator_factory",
