@@ -13,18 +13,18 @@ import org.ta4j.core.Strategy;
 import org.ta4j.core.TradingRecord;
 
 class BackTesterImpl implements BackTester {
-  private final TestResultFactory testResultFactory;
   private final BarSeriesManagerFactory barSeriesManagerFactory;
   private final StrategyFactory strategyFactory;
+  private final TestResultFactory testResultFactory;
 
   @Inject
   BackTesterImpl(
-      TestResultFactory testResultFactory,
       BarSeriesManagerFactory barSeriesManagerFactory,
-      StrategyFactory strategyFactory) {
-    this.testResultFactory = testResultFactory;
+      StrategyFactory strategyFactory,
+      TestResultFactory testResultFactory) {
     this.barSeriesManagerFactory = barSeriesManagerFactory;
     this.strategyFactory = strategyFactory;
+    this.testResultFactory = testResultFactory;
   }
 
   @Override
@@ -33,7 +33,7 @@ class BackTesterImpl implements BackTester {
         createBarSeriesManager(request.granularity(), request.candles());
     BarSeries series = seriesManager.getBarSeries();
     TradingRecord record = seriesManager.run(createStrategy(request.strategy(), series));
-    return testResultFactory.create(request, series, record);
+    return testResultFactory.create(series, record);
   }
 
   private BarSeriesManager createBarSeriesManager(

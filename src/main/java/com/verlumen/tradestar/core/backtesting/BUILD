@@ -19,6 +19,22 @@ java_library(
 )
 
 java_library(
+    name = "back_tester_impl",
+    srcs = ["BackTesterImpl.java"],
+    deps = [
+        ":back_tester",
+        ":bar_series_manager_factory",
+        ":test_result_factory",
+        "//src/main/java/com/verlumen/tradestar/core/ta/strategies:strategy_factory",
+        "@maven//:com_google_guava_guava",
+        "@maven//:com_google_inject_guice",
+        "@maven//:org_ta4j_ta4j_core",
+        "@tradestar_protos//:candles_java_proto",
+        "@tradestar_protos//:strategies_java_proto",
+    ],
+)
+
+java_library(
     name = "bar_series_manager_factory",
     srcs = ["BarSeriesManagerFactory.java"],
     visibility = ["//src/test/java:__subpackages__"],
