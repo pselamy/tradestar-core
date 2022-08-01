@@ -15,7 +15,7 @@ public interface RuleFactory {
     return StrategyOneOfCase.STRATEGYONEOF_NOT_SET;
   }
 
-  interface Adapter {
+  interface RuleAdapter {
     Rule buyRule(TradeStrategy params, BarSeries barSeries);
 
     Rule sellRule(TradeStrategy params, BarSeries barSeries);

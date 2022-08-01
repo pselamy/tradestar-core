@@ -67,6 +67,8 @@ java_library(
         ":adx_rule_factory",
         ":composite_rule_factory",
         ":rule_factory",
+        ":rule_factory_impl",
+        "//src/main/java/com/verlumen/tradestar/core/ta/rules/adapters:adapters_module",
         "@maven//:com_google_inject_guice",
     ],
 )

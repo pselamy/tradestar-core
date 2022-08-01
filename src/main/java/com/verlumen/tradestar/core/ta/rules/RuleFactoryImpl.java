@@ -14,11 +14,11 @@ import static com.google.mu.util.stream.BiStream.biStream;
 import static java.util.stream.Stream.ofNullable;
 
 public class RuleFactoryImpl implements RuleFactory {
-  private final ImmutableMap<StrategyOneOfCase, Adapter> adapters;
+  private final ImmutableMap<StrategyOneOfCase, RuleAdapter> adapters;
 
   @Inject
-  public RuleFactoryImpl(Set<Adapter> adapters) {
-    this.adapters = ImmutableMap.copyOf(biStream(adapters).mapKeys(Adapter::supportedCase).toMap());
+  public RuleFactoryImpl(Set<RuleAdapter> adapters) {
+    this.adapters = ImmutableMap.copyOf(biStream(adapters).mapKeys(RuleAdapter::supportedCase).toMap());
   }
 
   @Override
