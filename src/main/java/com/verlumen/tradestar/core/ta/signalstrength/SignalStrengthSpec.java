@@ -6,7 +6,7 @@ import com.verlumen.tradestar.protos.strategies.TradeStrategy;
 import org.ta4j.core.num.Num;
 
 public interface SignalStrengthSpec {
-    Range<Num> range(SignalStrength signalStrength);
+  Range<Num> range(SignalStrength signalStrength);
 
-    TradeStrategy.StrategyOneOfCase supportedCase();
+  TradeStrategy.StrategyOneOfCase supportedCase();
 }

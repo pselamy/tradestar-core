@@ -33,8 +33,8 @@ import static org.junit.Assert.assertThrows;
 
 @RunWith(TestParameterInjector.class)
 public class AdxRuleAdapterTest {
-  private static final ImmutableSet<SignalStrength> UNSUPPORTED_SIGNAL_STRENGTHS = ImmutableSet.of(
-          SignalStrength.UNRECOGNIZED, SignalStrength.UNSPECIFIED);
+  private static final ImmutableSet<SignalStrength> UNSUPPORTED_SIGNAL_STRENGTHS =
+      ImmutableSet.of(SignalStrength.UNRECOGNIZED, SignalStrength.UNSPECIFIED);
   private static final ImmutableMap<SignalStrength, Range<Integer>> ADX_VALUES_BY_SIGNAl_STRENGTH =
       ImmutableMap.of(
           SignalStrength.WEAK, Range.closedOpen(0, 25),

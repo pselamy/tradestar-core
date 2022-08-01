@@ -18,7 +18,8 @@ public class RuleFactoryImpl implements RuleFactory {
 
   @Inject
   public RuleFactoryImpl(Set<RuleAdapter> adapters) {
-    this.adapters = ImmutableMap.copyOf(biStream(adapters).mapKeys(RuleAdapter::supportedCase).toMap());
+    this.adapters =
+        ImmutableMap.copyOf(biStream(adapters).mapKeys(RuleAdapter::supportedCase).toMap());
   }
 
   @Override

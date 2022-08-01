@@ -1,6 +1,5 @@
 package com.verlumen.tradestar.core.ta.rules;
 
-import com.google.common.collect.ImmutableSet;
 import com.verlumen.tradestar.protos.strategies.TradeStrategy;
 import com.verlumen.tradestar.protos.strategies.TradeStrategy.StrategyOneOfCase;
 import org.ta4j.core.BarSeries;
