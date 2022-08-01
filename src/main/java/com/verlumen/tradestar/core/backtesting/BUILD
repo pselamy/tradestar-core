@@ -35,6 +35,17 @@ java_library(
 )
 
 java_library(
+    name = "back_testing_module",
+    srcs = ["BackTestingModule.java"],
+    deps = [
+        ":back_tester",
+        ":back_tester_impl",
+        "@maven//:com_google_guava_guava",
+        "@maven//:com_google_inject_guice",
+    ],
+)
+
+java_library(
     name = "bar_series_manager_factory",
     srcs = ["BarSeriesManagerFactory.java"],
     visibility = ["//src/test/java:__subpackages__"],
