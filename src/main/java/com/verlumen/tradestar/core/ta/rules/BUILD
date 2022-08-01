@@ -34,6 +34,23 @@ java_library(
         "//src/test/java:__subpackages__",
     ],
     deps = [
+        "@maven//:com_google_guava_guava",
+        "@maven//:org_ta4j_ta4j_core",
+        "@tradestar_protos//:strategies_java_proto",
+    ],
+)
+
+java_library(
+    name = "rule_factory_impl",
+    srcs = ["RuleFactoryImpl.java"],
+    visibility = [
+        "//src/test/java:__subpackages__",
+    ],
+    deps = [
+        ":rule_factory",
+        "@maven//:com_google_guava_guava",
+        "@maven//:com_google_inject_guice",
+        "@maven//:com_google_mug_mug",
         "@maven//:org_ta4j_ta4j_core",
         "@tradestar_protos//:strategies_java_proto",
     ],
