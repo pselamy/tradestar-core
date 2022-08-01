@@ -8,6 +8,7 @@ import java.util.EnumSet;
 
 import static com.google.common.collect.MoreCollectors.onlyElement;
 
+@SuppressWarnings("unused")
 public enum GranularitySpec {
   ONE_MINUTE(60),
   FIVE_MINUTES(300),
@@ -29,8 +30,6 @@ public enum GranularitySpec {
   public static GranularitySpec create(Duration duration) {
     return EnumSet.allOf(GranularitySpec.class).stream()
         .filter(spec -> spec.duration.equals(duration))
-        .findFirst()
-        .stream()
         .collect(onlyElement());
   }
 
