@@ -7,7 +7,7 @@ import org.ta4j.core.BarSeriesManager;
 
 class BarSeriesManagerFactoryImpl implements BarSeriesManagerFactory {
     @Override
-    public BarSeriesManager create(ImmutableList<Candle> candles) {
-        return new BarSeriesManager(BarSeriesFactory.create(candles));
+    public BarSeriesManager create(BarSeriesManagerFactory.CreateParams params) {
+        return new BarSeriesManager(BarSeriesFactory.create(params.granularity(), params.candles));
     }
 }
