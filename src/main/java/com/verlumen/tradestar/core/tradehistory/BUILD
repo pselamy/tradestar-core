@@ -4,6 +4,7 @@ java_library(
     name = "bar_factory",
     srcs = ["BarFactory.java"],
     deps = [
+        "//src/main/java/com/verlumen/tradestar/core/candles:granularity_spec",
         "@maven//:com_google_guava_guava",
         "@maven//:org_ta4j_ta4j_core",
         "@tradestar_protos//:candles_java_proto",
