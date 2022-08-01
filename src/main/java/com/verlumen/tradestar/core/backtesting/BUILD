@@ -1,4 +1,12 @@
 java_library(
+    name = "back_tester",
+    srcs = ["BackTester.java"],
+    deps = [
+        "@tradestar_protos//:backtesting_java_proto",
+    ],
+)
+
+java_library(
     name = "bar_series_manager_factory",
     srcs = ["BarSeriesManagerFactory.java"],
     visibility = ["//src/test/java:__subpackages__"],
