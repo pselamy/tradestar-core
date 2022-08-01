@@ -2,7 +2,6 @@ package com.verlumen.tradestar.core.candles;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.ImmutableList.toImmutableList;
-import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static java.time.Instant.ofEpochSecond;
 import static java.util.Comparator.comparing;
 
@@ -11,13 +10,13 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.math.Stats;
+import com.verlumen.tradestar.core.shared.CandleSorter;
 import com.verlumen.tradestar.protos.candles.Candle;
 import com.verlumen.tradestar.protos.candles.Granularity;
 import com.verlumen.tradestar.protos.trading.ExchangeTrade;
 import java.time.Instant;
 import java.util.function.Function;
 import java.util.stream.DoubleStream;
-import java.util.stream.Stream;
 
 public class CandleFactory {
   public static Candle create(CreateParams params) {
@@ -123,33 +122,8 @@ public class CandleFactory {
       GranularitySpec toSpec = GranularitySpec.create(toGranularity);
       checkArgument(toSpec.minutes() % fromSpec.minutes() == 0);
       checkArgument(candles.size() == toSpec.minutes() / (fromSpec.minutes()));
-
-      ImmutableList<Candle> sortedCandles = getSortedCandles(candles, fromSpec);
-      return new AutoValue_CandleFactory_MergeParams(ImmutableSet.copyOf(sortedCandles));
-    }
-
-    private static ImmutableList<Candle> getSortedCandles(
-        ImmutableSet<Candle> candles, GranularitySpec fromSpec) {
-      ImmutableList<Candle> sortedCandles =
-          candles.stream()
-              .sorted(comparing(candle -> candle.getStart().getSeconds()))
-              .collect(toImmutableList());
-
-      ImmutableSet<Long> expectedStartTimes =
-          Stream.iterate(
-                  sortedCandles.get(0).getStart().getSeconds(), start -> start + fromSpec.seconds())
-              .limit(sortedCandles.size())
-              .collect(toImmutableSet());
-      ImmutableSet<Long> actualStartTimes =
-          sortedCandles.stream()
-              .map(candle -> candle.getStart().getSeconds())
-              .collect(toImmutableSet());
-      checkArgument(
-          expectedStartTimes.equals(actualStartTimes),
-          "actual: %s\nexpected: %s",
-          actualStartTimes,
-          expectedStartTimes);
-      return sortedCandles;
+      ImmutableSet<Candle> sortedCandles = CandleSorter.sortAndValidate(candles, fromSpec);
+      return new AutoValue_CandleFactory_MergeParams(sortedCandles);
     }
 
     abstract ImmutableSet<Candle> candles();

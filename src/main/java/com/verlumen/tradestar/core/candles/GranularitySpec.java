@@ -2,9 +2,13 @@ package com.verlumen.tradestar.core.candles;
 
 import com.google.common.collect.ImmutableSet;
 import com.verlumen.tradestar.protos.candles.Granularity;
+
 import java.time.Duration;
 import java.util.EnumSet;
 
+import static com.google.common.collect.MoreCollectors.onlyElement;
+
+@SuppressWarnings("unused")
 public enum GranularitySpec {
   ONE_MINUTE(60),
   FIVE_MINUTES(300),
@@ -21,6 +25,12 @@ public enum GranularitySpec {
 
   GranularitySpec(int seconds) {
     this.duration = Duration.ofSeconds(seconds);
+  }
+
+  public static GranularitySpec create(Duration duration) {
+    return EnumSet.allOf(GranularitySpec.class).stream()
+        .filter(spec -> spec.duration.equals(duration))
+        .collect(onlyElement());
   }
 
   public static GranularitySpec create(Granularity granularity) {

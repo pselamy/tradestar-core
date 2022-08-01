@@ -5,6 +5,7 @@ java_library(
     deps = [
         ":granularity_spec",
         "//:autovalue",
+        "//src/main/java/com/verlumen/tradestar/core/shared:candle_sorter",
         "@maven//:com_google_guava_guava",
         "@tradestar_protos//:candles_java_proto",
         "@tradestar_protos//:instruments_java_proto",
