@@ -21,6 +21,7 @@ java_library(
         ":indicator_factory",
         "@maven//:com_google_guava_guava",
         "@maven//:com_google_inject_guice",
+        "@maven//:com_google_mug_mug",
         "@maven//:org_ta4j_ta4j_core",
         "@tradestar_protos//:strategies_java_proto",
     ],

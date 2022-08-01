@@ -10,23 +10,22 @@ import org.ta4j.core.num.Num;
 
 import java.util.Set;
 
-import static com.google.common.collect.ImmutableMap.toImmutableMap;
-import static java.util.Optional.ofNullable;
-import static java.util.function.Function.identity;
+import static com.google.common.collect.MoreCollectors.onlyElement;
+import static com.google.mu.util.stream.BiStream.biStream;
+import static java.util.stream.Stream.ofNullable;
 
 class IndicatorFactoryImpl implements IndicatorFactory {
-    private final ImmutableMap<StrategyOneOfCase, Adapter> adapters;
+  private final ImmutableMap<StrategyOneOfCase, Adapter> adapters;
 
-    @Inject
-    IndicatorFactoryImpl(Set<Adapter> adapters) {
-        this.adapters = adapters.stream()
-                .collect(toImmutableMap(Adapter::supportedCase, identity()));
-    }
+  @Inject
+  IndicatorFactoryImpl(Set<Adapter> adapters) {
+    this.adapters = ImmutableMap.copyOf(biStream(adapters).mapKeys(Adapter::supportedCase).toMap());
+  }
 
-    @Override
-    public Indicator<Num> create(TradeStrategy strategy, BarSeries series) {
-        return ofNullable(adapters.get(strategy.getStrategyOneOfCase()))
-                .map(adapter -> adapter.indicator(strategy, series))
-                .orElseThrow(UnsupportedOperationException::new);
-    }
+  @Override
+  public Indicator<Num> create(TradeStrategy strategy, BarSeries series) {
+    return ofNullable(adapters.get(strategy.getStrategyOneOfCase()))
+        .map(adapter -> adapter.indicator(strategy, series))
+        .collect(onlyElement());
+  }
 }
