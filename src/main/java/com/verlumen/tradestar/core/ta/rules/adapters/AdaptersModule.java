@@ -12,5 +12,6 @@ public class AdaptersModule extends AbstractModule {
     Multibinder<RuleFactory.RuleAdapter> ruleFactoryBinder =
         newSetBinder(binder(), RuleFactory.RuleAdapter.class);
     ruleFactoryBinder.addBinding().to(AdxRuleRuleAdapter.class);
+    ruleFactoryBinder.addBinding().to(CompositeRuleAdapter.class);
   }
 }
