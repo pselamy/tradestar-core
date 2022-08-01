@@ -1,4 +1,4 @@
-package com.verlumen.tradestar.backtesting;
+package com.verlumen.tradestar.core.backtesting;
 
 import com.google.common.collect.ImmutableList;
 import com.verlumen.tradestar.protos.candles.Candle;
