@@ -1,20 +1,4 @@
 java_library(
-    name = "adx_rule_factory",
-    srcs = ["AdxRuleFactory.java"],
-    visibility = ["//src/test/java:__subpackages__"],
-    deps = [
-        ":rule_factory",
-        "//src/main/java/com/verlumen/tradestar/core/ta/indicators:indicator_factory",
-        "//src/main/java/com/verlumen/tradestar/core/ta/signalstrength:signal_strength_spec",
-        "@maven//:com_google_guava_guava",
-        "@maven//:com_google_inject_guice",
-        "@maven//:com_google_mug_mug",
-        "@maven//:org_ta4j_ta4j_core",
-        "@tradestar_protos//:strategies_java_proto",
-    ],
-)
-
-java_library(
     name = "composite_rule_factory",
     srcs = ["CompositeRuleFactory.java"],
     deps = [
@@ -64,8 +48,6 @@ java_library(
         "//src/test/java:__subpackages__",
     ],
     deps = [
-        ":adx_rule_factory",
-        ":composite_rule_factory",
         ":rule_factory",
         ":rule_factory_impl",
         "//src/main/java/com/verlumen/tradestar/core/ta/rules/adapters:adapters_module",
