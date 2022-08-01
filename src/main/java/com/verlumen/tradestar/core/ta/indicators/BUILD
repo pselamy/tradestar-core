@@ -37,6 +37,7 @@ java_library(
     deps = [
         ":indicator_factory",
         ":indicator_factory_impl",
+        "//src/main/java/com/verlumen/tradestar/core/ta/indicators/adapters:adapters_module",
         "@maven//:com_google_inject_guice",
     ],
 )
