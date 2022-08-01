@@ -10,6 +10,7 @@ java_library(
 java_library(
     name = "back_tester",
     srcs = ["BackTester.java"],
+    visibility = ["//visibility:public"],
     deps = [
         "//:autovalue",
         "@maven//:com_google_guava_guava",
@@ -21,6 +22,7 @@ java_library(
 java_library(
     name = "back_tester_impl",
     srcs = ["BackTesterImpl.java"],
+    visibility = ["//src/test/java:__subpackages__"],
     deps = [
         ":back_tester",
         ":bar_series_manager_factory",
@@ -37,6 +39,7 @@ java_library(
 java_library(
     name = "back_testing_module",
     srcs = ["BackTestingModule.java"],
+    visibility = ["//src/test/java:__subpackages__"],
     deps = [
         ":back_tester",
         ":back_tester_impl",
