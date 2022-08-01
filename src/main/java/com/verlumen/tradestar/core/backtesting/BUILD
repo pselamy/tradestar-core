@@ -2,7 +2,7 @@ java_library(
     name = "back_tester",
     srcs = ["BackTester.java"],
     deps = [
-        "@tradestar_protos//:backtesting_java_proto",
+        "@tradestar_protos//:strategies_java_proto",
     ],
 )
 
