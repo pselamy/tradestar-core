@@ -52,7 +52,7 @@ public class BackTesterImplTest {
 
   @Bind
   private static final BarSeriesManagerFactory FAKE_BAR_SERIES_MANAGER_FACTORY =
-      (candles) -> FAKE_BAR_SERIES_MANAGER;
+      candles -> FAKE_BAR_SERIES_MANAGER;
 
   @Bind
   private static final StrategyFactory FAKE_STRATEGY_FACTORY =
