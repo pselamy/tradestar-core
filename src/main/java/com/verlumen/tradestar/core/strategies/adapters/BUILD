@@ -8,6 +8,7 @@ java_library(
         ":adx_trade_strategy_adapter",
         ":composite_trade_strategy_adapter",
         ":trade_strategy_adapter",
+        "@maven//:com_google_guava_guava",
         "@maven//:com_google_inject_guice",
     ],
 )
