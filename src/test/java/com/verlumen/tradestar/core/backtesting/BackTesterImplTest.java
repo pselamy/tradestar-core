@@ -9,7 +9,6 @@ import com.google.inject.testing.fieldbinder.Bind;
 import com.google.inject.testing.fieldbinder.BoundFieldModule;
 import com.verlumen.tradestar.core.backtesting.BackTester.TestParams;
 import com.verlumen.tradestar.core.strategies.adapters.TradeStrategyAdapter;
-import com.verlumen.tradestar.core.ta.strategies.StrategyFactory;
 import com.verlumen.tradestar.protos.candles.Candle;
 import com.verlumen.tradestar.protos.candles.Granularity;
 import com.verlumen.tradestar.protos.strategies.TradeStrategy;
@@ -49,33 +48,37 @@ public class BackTesterImplTest {
   private static final ImmutableSet<Candle> ONE_MINUTE_CANDLES =
       ImmutableSet.of(newCandle(0), newCandle(60));
 
-
   private static final Strategy ADX_STRATEGY =
-          new BaseStrategy(new BooleanRule(true), new BooleanRule(true));
+      new BaseStrategy(new BooleanRule(true), new BooleanRule(true));
   private static final TradeStrategy ADX_TRADE_STRATEGY =
-          TradeStrategy.newBuilder().setAdx(TradeStrategy.ADX.getDefaultInstance()).build();
+      TradeStrategy.newBuilder().setAdx(TradeStrategy.ADX.getDefaultInstance()).build();
   private static final Strategy COMPOSITE_STRATEGY =
-          new BaseStrategy(new BooleanRule(true), new BooleanRule(false));
+      new BaseStrategy(new BooleanRule(true), new BooleanRule(false));
   private static final TradeStrategy COMPOSITE_TRADE_STRATEGY =
-          TradeStrategy.newBuilder().setComposite(TradeStrategy.Composite.getDefaultInstance()).build();
+      TradeStrategy.newBuilder().setComposite(TradeStrategy.Composite.getDefaultInstance()).build();
 
   private static final TradeStrategyAdapter ADX_ADAPTER =
-          FakeAdapter.create(TradeStrategy.StrategyOneOfCase.ADX, ignored -> ADX_STRATEGY, ADX_TRADE_STRATEGY);
+      FakeAdapter.create(
+          TradeStrategy.StrategyOneOfCase.ADX, ignored -> ADX_STRATEGY, ADX_TRADE_STRATEGY);
   private static final TradeStrategyAdapter COMPOSITE_ADAPTER =
-          FakeAdapter.create(
-                  TradeStrategy.StrategyOneOfCase.COMPOSITE, ignored -> COMPOSITE_STRATEGY, COMPOSITE_TRADE_STRATEGY);
+      FakeAdapter.create(
+          TradeStrategy.StrategyOneOfCase.COMPOSITE,
+          ignored -> COMPOSITE_STRATEGY,
+          COMPOSITE_TRADE_STRATEGY);
   private static final TestParams TEST_PARAMS =
-          TestParams.builder()
-                  .setCandles(ONE_MINUTE_CANDLES)
-                  .setGranularity(Granularity.ONE_MINUTE)
-                  .setStrategy(ADX_TRADE_STRATEGY)
-                  .build();
+      TestParams.builder()
+          .setCandles(ONE_MINUTE_CANDLES)
+          .setGranularity(Granularity.ONE_MINUTE)
+          .setStrategy(ADX_TRADE_STRATEGY)
+          .build();
 
   @Bind
-  private static final Set<TradeStrategyAdapter> ADAPTERS = ImmutableSet.of(ADX_ADAPTER, COMPOSITE_ADAPTER);
+  private static final Set<TradeStrategyAdapter> ADAPTERS =
+      ImmutableSet.of(ADX_ADAPTER, COMPOSITE_ADAPTER);
+
   @Bind
   private static final BarSeriesManagerFactory FAKE_BAR_SERIES_MANAGER_FACTORY =
-          candles -> FAKE_BAR_SERIES_MANAGER;
+      candles -> FAKE_BAR_SERIES_MANAGER;
 
   @Inject private BackTesterImpl backTester;
 
@@ -112,11 +115,11 @@ public class BackTesterImplTest {
   @AutoValue
   abstract static class FakeAdapter implements TradeStrategyAdapter {
     static FakeAdapter create(
-            TradeStrategy.StrategyOneOfCase strategyOneOfCase,
-            Function<TradeStrategy, Strategy> strategyFunction,
-            TradeStrategy... strategies) {
+        TradeStrategy.StrategyOneOfCase strategyOneOfCase,
+        Function<TradeStrategy, Strategy> strategyFunction,
+        TradeStrategy... strategies) {
       return new AutoValue_BackTesterImplTest_FakeAdapter(
-              strategyOneOfCase, strategyFunction, ImmutableSet.copyOf(strategies));
+          strategyOneOfCase, strategyFunction, ImmutableSet.copyOf(strategies));
     }
 
     abstract Function<TradeStrategy, Strategy> strategyFunction();
