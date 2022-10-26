@@ -1,5 +1,6 @@
 package com.verlumen.tradestar.core.backtesting;
 
+import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Guice;
@@ -7,6 +8,7 @@ import com.google.inject.Inject;
 import com.google.inject.testing.fieldbinder.Bind;
 import com.google.inject.testing.fieldbinder.BoundFieldModule;
 import com.verlumen.tradestar.core.backtesting.BackTester.TestParams;
+import com.verlumen.tradestar.core.strategies.adapters.TradeStrategyAdapter;
 import com.verlumen.tradestar.core.ta.strategies.StrategyFactory;
 import com.verlumen.tradestar.protos.candles.Candle;
 import com.verlumen.tradestar.protos.candles.Granularity;
@@ -21,6 +23,9 @@ import org.ta4j.core.rules.BooleanRule;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static com.google.common.truth.Truth.assertThat;
 import static java.lang.Math.random;
@@ -43,20 +48,34 @@ public class BackTesterImplTest {
   private static final FakeBarSeriesManager FAKE_BAR_SERIES_MANAGER = new FakeBarSeriesManager();
   private static final ImmutableSet<Candle> ONE_MINUTE_CANDLES =
       ImmutableSet.of(newCandle(0), newCandle(60));
-  private static final TestParams TEST_PARAMS =
-      TestParams.builder()
-          .setCandles(ONE_MINUTE_CANDLES)
-          .setGranularity(Granularity.ONE_MINUTE)
-          .setStrategy(TradeStrategy.getDefaultInstance())
-          .build();
 
+
+  private static final Strategy ADX_STRATEGY =
+          new BaseStrategy(new BooleanRule(true), new BooleanRule(true));
+  private static final TradeStrategy ADX_TRADE_STRATEGY =
+          TradeStrategy.newBuilder().setAdx(TradeStrategy.ADX.getDefaultInstance()).build();
+  private static final Strategy COMPOSITE_STRATEGY =
+          new BaseStrategy(new BooleanRule(true), new BooleanRule(false));
+  private static final TradeStrategy COMPOSITE_TRADE_STRATEGY =
+          TradeStrategy.newBuilder().setComposite(TradeStrategy.Composite.getDefaultInstance()).build();
+
+  private static final TradeStrategyAdapter ADX_ADAPTER =
+          FakeAdapter.create(TradeStrategy.StrategyOneOfCase.ADX, ignored -> ADX_STRATEGY, ADX_TRADE_STRATEGY);
+  private static final TradeStrategyAdapter COMPOSITE_ADAPTER =
+          FakeAdapter.create(
+                  TradeStrategy.StrategyOneOfCase.COMPOSITE, ignored -> COMPOSITE_STRATEGY, COMPOSITE_TRADE_STRATEGY);
+  private static final TestParams TEST_PARAMS =
+          TestParams.builder()
+                  .setCandles(ONE_MINUTE_CANDLES)
+                  .setGranularity(Granularity.ONE_MINUTE)
+                  .setStrategy(ADX_TRADE_STRATEGY)
+                  .build();
+
+  @Bind
+  private static final Set<TradeStrategyAdapter> ADAPTERS = ImmutableSet.of(ADX_ADAPTER, COMPOSITE_ADAPTER);
   @Bind
   private static final BarSeriesManagerFactory FAKE_BAR_SERIES_MANAGER_FACTORY =
-      candles -> FAKE_BAR_SERIES_MANAGER;
-
-  @Bind
-  private static final StrategyFactory FAKE_STRATEGY_FACTORY =
-      (tradeStrategy, barSeries) -> FAKE_STRATEGY;
+          candles -> FAKE_BAR_SERIES_MANAGER;
 
   @Inject private BackTesterImpl backTester;
 
@@ -87,6 +106,31 @@ public class BackTesterImplTest {
     @Override
     public TradingRecord run(Strategy strategy) {
       return TRADING_RECORD;
+    }
+  }
+
+  @AutoValue
+  abstract static class FakeAdapter implements TradeStrategyAdapter {
+    static FakeAdapter create(
+            TradeStrategy.StrategyOneOfCase strategyOneOfCase,
+            Function<TradeStrategy, Strategy> strategyFunction,
+            TradeStrategy... strategies) {
+      return new AutoValue_BackTesterImplTest_FakeAdapter(
+              strategyOneOfCase, strategyFunction, ImmutableSet.copyOf(strategies));
+    }
+
+    abstract Function<TradeStrategy, Strategy> strategyFunction();
+
+    abstract ImmutableSet<TradeStrategy> strategies();
+
+    @Override
+    public Stream<TradeStrategy> generate() {
+      return strategies().stream();
+    }
+
+    @Override
+    public Strategy toTa4jStrategy(TradeStrategy tradeStrategy, BarSeries barSeries) {
+      return strategyFunction().apply(tradeStrategy);
     }
   }
 }
