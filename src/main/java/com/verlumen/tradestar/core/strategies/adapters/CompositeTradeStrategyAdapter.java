@@ -39,7 +39,7 @@ class CompositeTradeStrategyAdapter implements TradeStrategyAdapter {
 
   @Inject
   CompositeTradeStrategyAdapter(
-          Set<TradeStrategyAdapter> adapters, StrategyNegationHandler negationHandler) {
+      Set<TradeStrategyAdapter> adapters, StrategyNegationHandler negationHandler) {
     this.adapters = Maps.uniqueIndex(adapters, TradeStrategyAdapter::strategyOneOfCase);
     this.negationHandler = negationHandler;
   }

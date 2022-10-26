@@ -7,9 +7,9 @@ import org.ta4j.core.Strategy;
 import java.util.stream.Stream;
 
 public interface TradeStrategyAdapter {
-    Stream<TradeStrategy> generate();
+  Stream<TradeStrategy> generate();
 
-    Strategy toTa4jStrategy(TradeStrategy tradeStrategy, BarSeries barSeries);
+  Strategy toTa4jStrategy(TradeStrategy tradeStrategy, BarSeries barSeries);
 
-    TradeStrategy.StrategyOneOfCase strategyOneOfCase();
+  TradeStrategy.StrategyOneOfCase strategyOneOfCase();
 }
