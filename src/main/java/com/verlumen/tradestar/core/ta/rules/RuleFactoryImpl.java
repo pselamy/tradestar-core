@@ -1,6 +1,7 @@
 package com.verlumen.tradestar.core.ta.rules;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.verlumen.tradestar.protos.strategies.TradeStrategy;
 import com.verlumen.tradestar.protos.strategies.TradeStrategy.StrategyOneOfCase;
@@ -10,7 +11,6 @@ import org.ta4j.core.Rule;
 import java.util.Set;
 
 import static com.google.common.collect.MoreCollectors.onlyElement;
-import static com.google.mu.util.stream.BiStream.biStream;
 import static java.util.stream.Stream.ofNullable;
 
 public class RuleFactoryImpl implements RuleFactory {
@@ -18,8 +18,7 @@ public class RuleFactoryImpl implements RuleFactory {
 
   @Inject
   public RuleFactoryImpl(Set<RuleAdapter> adapters) {
-    this.adapters =
-        ImmutableMap.copyOf(biStream(adapters).mapKeys(RuleAdapter::supportedCase).toMap());
+    this.adapters = Maps.uniqueIndex(adapters, RuleAdapter::supportedCase);
   }
 
   @Override
