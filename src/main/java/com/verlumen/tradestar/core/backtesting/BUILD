@@ -28,7 +28,6 @@ java_library(
         ":bar_series_manager_factory",
         ":test_result_factory",
         "//src/main/java/com/verlumen/tradestar/core/strategies/adapters:trade_strategy_adapter",
-        "//src/main/java/com/verlumen/tradestar/core/ta/strategies:strategy_factory",
         "@maven//:com_google_guava_guava",
         "@maven//:com_google_inject_guice",
         "@maven//:org_ta4j_ta4j_core",
