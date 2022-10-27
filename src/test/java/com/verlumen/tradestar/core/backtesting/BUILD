@@ -7,7 +7,6 @@ java_test(
         "//src/main/java/com/verlumen/tradestar/core/backtesting:back_tester_impl",
         "//src/main/java/com/verlumen/tradestar/core/backtesting:bar_series_manager_factory",
         "//src/main/java/com/verlumen/tradestar/core/strategies/adapters:trade_strategy_adapter",
-        "//src/main/java/com/verlumen/tradestar/core/ta/strategies:strategy_factory",
         "@maven//:com_google_inject_extensions_guice_testlib",
         "@maven//:com_google_inject_guice",
         "@maven//:com_google_truth_truth",
