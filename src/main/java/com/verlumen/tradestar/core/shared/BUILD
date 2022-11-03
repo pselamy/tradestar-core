@@ -1,4 +1,14 @@
 java_library(
+    name = "candle_comparators",
+    srcs = [
+        "CandleComparators.java",
+    ],
+    visibility = ["//src/main/java/com/verlumen/tradestar/core:__subpackages__"],
+    deps = [        "@tradestar_protos//:candles_java_proto",
+],
+)
+
+java_library(
     name = "candle_sorter",
     srcs = ["CandleSorter.java"],
     visibility = ["//src/main/java/com/verlumen/tradestar/core:__subpackages__"],
