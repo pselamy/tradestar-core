@@ -7,7 +7,7 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.testing.fieldbinder.Bind;
 import com.google.inject.testing.fieldbinder.BoundFieldModule;
-import com.verlumen.tradestar.core.backtesting.BackTester.TestParams;
+import com.verlumen.tradestar.core.backtesting.Backtester.Params;
 import com.verlumen.tradestar.core.strategies.adapters.TradeStrategyAdapter;
 import com.verlumen.tradestar.protos.candles.Candle;
 import com.verlumen.tradestar.protos.candles.Granularity;
@@ -31,10 +31,7 @@ import static java.lang.Math.random;
 import static org.ta4j.core.num.DecimalNum.valueOf;
 
 @RunWith(JUnit4.class)
-public class BackTesterImplTest {
-
-  private static final Strategy FAKE_STRATEGY =
-      new BaseStrategy(new BooleanRule(true), new BooleanRule(false));
+public class BacktesterImplTest {
   private static final Bar BAR =
       BaseBar.builder()
           .closePrice(valueOf(random()))
@@ -46,7 +43,7 @@ public class BackTesterImplTest {
   private static final TradingRecord TRADING_RECORD = new BaseTradingRecord("fake-trading-record");
   private static final FakeBarSeriesManager FAKE_BAR_SERIES_MANAGER = new FakeBarSeriesManager();
   private static final ImmutableSet<Candle> ONE_MINUTE_CANDLES =
-      ImmutableSet.of(newCandle(0), newCandle(60));
+      ImmutableSet.of(newCandle(Granularity.ONE_MINUTE, 0), newCandle(Granularity.ONE_MINUTE, 60));
 
   private static final Strategy ADX_STRATEGY =
       new BaseStrategy(new BooleanRule(true), new BooleanRule(true));
@@ -65,25 +62,23 @@ public class BackTesterImplTest {
           TradeStrategy.StrategyOneOfCase.COMPOSITE,
           ignored -> COMPOSITE_STRATEGY,
           COMPOSITE_TRADE_STRATEGY);
-  private static final TestParams TEST_PARAMS =
-      TestParams.builder()
-          .setCandles(ONE_MINUTE_CANDLES)
-          .setGranularity(Granularity.ONE_MINUTE)
-          .setStrategy(ADX_TRADE_STRATEGY)
-          .build();
 
   @Bind
   private static final Set<TradeStrategyAdapter> ADAPTERS =
       ImmutableSet.of(ADX_ADAPTER, COMPOSITE_ADAPTER);
 
-  @Bind
-  private static final BarSeriesManagerFactory FAKE_BAR_SERIES_MANAGER_FACTORY =
-      candles -> FAKE_BAR_SERIES_MANAGER;
+  private static final Params TEST_PARAMS = Params.create(ONE_MINUTE_CANDLES, ADX_TRADE_STRATEGY);
+  @Inject private BacktesterImpl backTester;
 
-  @Inject private BackTesterImpl backTester;
-
-  private static Candle newCandle(long startTime) {
-    Candle.Builder builder = Candle.newBuilder();
+  private static Candle newCandle(Granularity granularity, long startTime) {
+    Candle.Builder builder =
+        Candle.newBuilder()
+            .setOpen(25)
+            .setHigh(50)
+            .setLow(5)
+            .setClose(23)
+            .setVolume(10323)
+            .setGranularity(granularity);
     builder.getStartBuilder().setSeconds(startTime);
     return builder.build();
   }
@@ -118,7 +113,7 @@ public class BackTesterImplTest {
         TradeStrategy.StrategyOneOfCase strategyOneOfCase,
         Function<TradeStrategy, Strategy> strategyFunction,
         TradeStrategy... strategies) {
-      return new AutoValue_BackTesterImplTest_FakeAdapter(
+      return new AutoValue_BacktesterImplTest_FakeAdapter(
           strategyOneOfCase, strategyFunction, ImmutableSet.copyOf(strategies));
     }
 
