@@ -4,9 +4,10 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import com.verlumen.tradestar.core.shared.CandleComparators;
 import com.verlumen.tradestar.core.strategies.adapters.TradeStrategyAdapter;
+import com.verlumen.tradestar.core.tradehistory.BarSeriesFactory;
 import com.verlumen.tradestar.protos.candles.Candle;
-import com.verlumen.tradestar.protos.candles.Granularity;
 import com.verlumen.tradestar.protos.strategies.TradeStrategy;
 import com.verlumen.tradestar.protos.strategies.TradeStrategy.StrategyOneOfCase;
 import com.verlumen.tradestar.protos.strategies.TradeStrategyTestResult;
@@ -17,37 +18,29 @@ import org.ta4j.core.TradingRecord;
 
 import java.util.Set;
 
-class BackTesterImpl implements BackTester {
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
+
+class BacktesterImpl implements Backtester {
   private final ImmutableMap<StrategyOneOfCase, TradeStrategyAdapter> adapters;
-  private final BarSeriesManagerFactory barSeriesManagerFactory;
   private final TestResultFactory testResultFactory;
 
   @Inject
-  BackTesterImpl(
-      Set<TradeStrategyAdapter> adapters,
-      BarSeriesManagerFactory barSeriesManagerFactory,
-      TestResultFactory testResultFactory) {
+  BacktesterImpl(Set<TradeStrategyAdapter> adapters, TestResultFactory testResultFactory) {
     this.adapters = Maps.uniqueIndex(adapters, TradeStrategyAdapter::strategyOneOfCase);
-    this.barSeriesManagerFactory = barSeriesManagerFactory;
     this.testResultFactory = testResultFactory;
   }
 
   @Override
-  public TradeStrategyTestResult test(TestParams request) {
-    BarSeriesManager seriesManager =
-        createBarSeriesManager(request.granularity(), request.candles());
+  public TradeStrategyTestResult test(Params params) {
+    BarSeriesManager seriesManager = createBarSeriesManager(params.candles());
     BarSeries series = seriesManager.getBarSeries();
-    TradingRecord record = seriesManager.run(createStrategy(request.strategy(), series));
+    Strategy strategy = createStrategy(params.strategy(), series);
+    TradingRecord record = seriesManager.run(strategy);
     return testResultFactory.create(series, record);
   }
 
-  private BarSeriesManager createBarSeriesManager(
-      Granularity granularity, ImmutableSet<Candle> candles) {
-    return barSeriesManagerFactory.create(
-        BarSeriesManagerFactory.CreateParams.builder()
-            .setCandles(candles)
-            .setGranularity(granularity)
-            .build());
+  private BarSeriesManager createBarSeriesManager(ImmutableSet<Candle> candles) {
+    return BarSeriesManagerFactory.create(candles);
   }
 
   private Strategy createStrategy(TradeStrategy strategy, BarSeries series) {
@@ -56,5 +49,15 @@ class BackTesterImpl implements BackTester {
 
   private TradeStrategyAdapter getTradeStrategyAdapter(TradeStrategy strategy) {
     return adapters.get(strategy.getStrategyOneOfCase());
+  }
+
+  static class BarSeriesManagerFactory {
+    static BarSeriesManager create(ImmutableSet<Candle> candles) {
+      return new BarSeriesManager(
+          BarSeriesFactory.create(
+              candles.stream()
+                  .sorted(CandleComparators.START_TIME_ASCENDING)
+                  .collect(toImmutableSet())));
+    }
   }
 }
