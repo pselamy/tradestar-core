@@ -20,14 +20,16 @@ java_library(
 )
 
 java_library(
-    name = "back_tester_impl",
-    srcs = ["BackTesterImpl.java"],
+    name = "backtester_impl",
+    srcs = ["BacktesterImpl.java"],
     visibility = ["//src/test/java:__subpackages__"],
     deps = [
-        ":back_tester",
-        ":bar_series_manager_factory",
+        ":backtester",
         ":test_result_factory",
+        "//src/main/java/com/verlumen/tradestar/core/shared:candle_comparators",
+        "//src/main/java/com/verlumen/tradestar/core/shared:constants",
         "//src/main/java/com/verlumen/tradestar/core/strategies/adapters:trade_strategy_adapter",
+        "//src/main/java/com/verlumen/tradestar/core/tradehistory:bar_series_factory",
         "@maven//:com_google_guava_guava",
         "@maven//:com_google_inject_guice",
         "@maven//:org_ta4j_ta4j_core",
@@ -37,12 +39,12 @@ java_library(
 )
 
 java_library(
-    name = "back_testing_module",
-    srcs = ["BackTestingModule.java"],
+    name = "backtesting_module",
+    srcs = ["BacktestingModule.java"],
     visibility = ["//src/test/java:__subpackages__"],
     deps = [
-        ":back_tester",
-        ":back_tester_impl",
+        ":backtester",
+        ":backtester_impl",
         "@maven//:com_google_guava_guava",
         "@maven//:com_google_inject_guice",
     ],
