@@ -4,8 +4,9 @@ java_library(
         "CandleComparators.java",
     ],
     visibility = ["//src/main/java/com/verlumen/tradestar/core:__subpackages__"],
-    deps = [        "@tradestar_protos//:candles_java_proto",
-],
+    deps = [
+        "@tradestar_protos//:candles_java_proto",
+    ],
 )
 
 java_library(
