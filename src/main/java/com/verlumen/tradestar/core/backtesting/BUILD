@@ -8,8 +8,8 @@ java_library(
 )
 
 java_library(
-    name = "back_tester",
-    srcs = ["BackTester.java"],
+    name = "backtester",
+    srcs = ["Backtester.java"],
     visibility = ["//visibility:public"],
     deps = [
         "//:autovalue",
