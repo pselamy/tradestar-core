@@ -25,6 +25,7 @@ public class BarSeriesFactory {
         candles.stream()
             .map(Candle::getGranularity)
             .filter(SUPPORTED_GRANULARITIES::contains)
+            .distinct()
             .collect(onlyElement());
     GranularitySpec granularitySpec = GranularitySpec.create(granularity);
     return create(
