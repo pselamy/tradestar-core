@@ -3,7 +3,7 @@ java_library(
     srcs = [
         "CandleComparators.java",
     ],
-    visibility = ["//src/main/java/com/verlumen/tradestar/core:__subpackages__"],
+    visibility = ["//visibility:public"],
     deps = [
         "@tradestar_protos//:candles_java_proto",
     ],
