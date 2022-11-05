@@ -20,12 +20,6 @@ public class AdapterBasedTradeStrategyGenerator implements TradeStrategyGenerato
     this.adapters = Maps.uniqueIndex(adapters, TradeStrategyAdapter::strategyOneOfCase);
   }
 
-  @Override
-  public Stream<TradeStrategy> generate() {
-    return generate(ignored -> true);
-  }
-
-
 
   @Override
   public Stream<TradeStrategy> generate(ImmutableSet<StrategyOneOfCase> oneOfCases) {
