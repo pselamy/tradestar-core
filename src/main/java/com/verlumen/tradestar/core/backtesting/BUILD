@@ -41,7 +41,7 @@ java_library(
 java_library(
     name = "backtesting_module",
     srcs = ["BacktestingModule.java"],
-    visibility = ["//src/test/java:__subpackages__"],
+    visibility = ["//visibility:public"],
     deps = [
         ":backtester",
         ":backtester_impl",
