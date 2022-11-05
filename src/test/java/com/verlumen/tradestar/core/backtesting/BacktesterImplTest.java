@@ -72,13 +72,8 @@ public class BacktesterImplTest {
 
   private static Candle newCandle(Granularity granularity, long startTime) {
     Candle.Builder builder =
-        Candle.newBuilder()
-            .setOpen(25)
-            .setHigh(50)
-            .setLow(5)
-            .setClose(23)
-            .setVolume(10323)
-            .setGranularity(granularity);
+        Candle.newBuilder().setOpen(25).setHigh(50).setLow(5).setClose(23).setVolume(10323);
+    builder.getCandleDescriptorBuilder().setGranularity(granularity);
     builder.getStartBuilder().setSeconds(startTime);
     return builder.build();
   }
