@@ -69,7 +69,7 @@ maven_install(
 ##########################
 git_repository(
     name = "tradestar_protos",
-    commit = "db44551b10340e3da79007520e600f0af3f167be",
+    commit = "63d5c2eb2554e73facdfe3fd38330d950214b0cb",
     remote = "https://github.com/pselamy/tradestar-protos",
-    shallow_since = "1659586930 -0400",
+    shallow_since = "1667686225 -0400",
 )

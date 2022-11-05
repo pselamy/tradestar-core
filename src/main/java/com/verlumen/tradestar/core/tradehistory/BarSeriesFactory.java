@@ -23,7 +23,7 @@ public class BarSeriesFactory {
     checkArgument(candles.stream().allMatch(Candle::hasStart));
     Granularity granularity =
         candles.stream()
-            .map(Candle::getGranularity)
+            .map(candle -> candle.getCandleDescriptor().getGranularity())
             .filter(SUPPORTED_GRANULARITIES::contains)
             .distinct()
             .collect(onlyElement());
