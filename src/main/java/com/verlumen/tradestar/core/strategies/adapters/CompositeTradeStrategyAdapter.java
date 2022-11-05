@@ -1,6 +1,5 @@
 package com.verlumen.tradestar.core.strategies.adapters;
 
-import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -26,12 +25,11 @@ import static java.util.EnumSet.allOf;
 class CompositeTradeStrategyAdapter implements TradeStrategyAdapter {
   private static final ImmutableMap<Joiner, StrategyJoiner> JOINERS =
       ImmutableMap.of(
-          Joiner.AND, StrategyJoiner.create(Strategy::and),
-          Joiner.OR, StrategyJoiner.create(Strategy::or),
+          Joiner.AND, Strategy::and,
+          Joiner.OR, Strategy::or,
           Joiner.XOR,
-              StrategyJoiner.create(
-                  (strategy1, strategy2) ->
-                      strategy1.and(strategy2).opposite().and(strategy1.or(strategy2))));
+              (strategy1, strategy2) ->
+                  strategy1.and(strategy2).opposite().and(strategy1.or(strategy2)));
 
   private final Provider<Set<TradeStrategyAdapter>> adapters;
   private final StrategyNegationHandler negationHandler;
@@ -114,16 +112,9 @@ class CompositeTradeStrategyAdapter implements TradeStrategyAdapter {
     return StrategyOneOfCase.COMPOSITE;
   }
 
-  @AutoValue
-  abstract static class StrategyJoiner {
-    static StrategyJoiner create(BinaryOperator<Strategy> operator) {
-      return new AutoValue_CompositeTradeStrategyAdapter_StrategyJoiner(operator);
-    }
-
-    abstract BinaryOperator<Strategy> operator();
-
-    Strategy join(ImmutableSet<Strategy> strategies) {
-      return strategies.stream().reduce(operator()).stream().collect(onlyElement());
+  private interface StrategyJoiner extends BinaryOperator<Strategy> {
+    default Strategy join(ImmutableSet<Strategy> strategies) {
+      return strategies.stream().reduce(this).stream().collect(onlyElement());
     }
   }
 }
