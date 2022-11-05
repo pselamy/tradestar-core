@@ -4,7 +4,9 @@ import com.google.inject.Inject;
 import org.ta4j.core.analysis.criteria.*;
 import org.ta4j.core.analysis.criteria.pnl.*;
 
-class AnalysisCriteria {
+import java.io.Serializable;
+
+class AnalysisCriteria implements Serializable {
   private final AverageLossCriterion averageLoss;
   private final AverageProfitCriterion averageProfit;
   private final AverageReturnPerBarCriterion averageReturnPerBar;
