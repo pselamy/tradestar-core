@@ -37,7 +37,6 @@ java_library(
     deps = [
         ":strategy_negation_handler",
         ":trade_strategy_adapter",
-        "//:autovalue",
         "@maven//:com_google_guava_guava",
         "@maven//:com_google_inject_guice",
         "@maven//:org_ta4j_ta4j_core",

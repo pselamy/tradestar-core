@@ -19,4 +19,9 @@ public class BacktestingModuleTest {
   public void createInjector_consumesModule() {
     Guice.createInjector(underTest);
   }
+
+  @Test
+  public void module_providesBacktester() {
+    Guice.createInjector(underTest).getInstance(Backtester.class);
+  }
 }
