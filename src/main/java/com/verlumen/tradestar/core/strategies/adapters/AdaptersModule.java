@@ -14,6 +14,6 @@ public class AdaptersModule extends AbstractModule {
   protected void configure() {
     Multibinder<TradeStrategyAdapter> tradeStrategyAdapterMultibinder =
         newSetBinder(binder(), TradeStrategyAdapter.class);
-    TRADE_STRATEGY_ADAPTERS.forEach(t -> tradeStrategyAdapterMultibinder.addBinding().to(t));
+    TRADE_STRATEGY_ADAPTERS.forEach(tradeStrategyAdapterMultibinder.addBinding()::to);
   }
 }

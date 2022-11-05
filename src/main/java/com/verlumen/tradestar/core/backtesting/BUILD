@@ -45,6 +45,7 @@ java_library(
     deps = [
         ":backtester",
         ":backtester_impl",
+        "//src/main/java/com/verlumen/tradestar/core/strategies/adapters:adapters_module",
         "@maven//:com_google_guava_guava",
         "@maven//:com_google_inject_guice",
     ],
