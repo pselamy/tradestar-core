@@ -4,8 +4,8 @@ import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.verlumen.tradestar.protos.strategies.TradeStrategy;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.Strategy;
@@ -26,21 +26,20 @@ import static java.util.EnumSet.allOf;
 class CompositeTradeStrategyAdapter implements TradeStrategyAdapter {
   private static final ImmutableMap<Joiner, StrategyJoiner> JOINERS =
       ImmutableMap.of(
-          Joiner.AND, StrategyJoiner.create(Joiner.AND, Strategy::and),
-          Joiner.OR, StrategyJoiner.create(Joiner.OR, Strategy::or),
+          Joiner.AND, StrategyJoiner.create(Strategy::and),
+          Joiner.OR, StrategyJoiner.create(Strategy::or),
           Joiner.XOR,
               StrategyJoiner.create(
-                  Joiner.XOR,
                   (strategy1, strategy2) ->
                       strategy1.and(strategy2).opposite().and(strategy1.or(strategy2))));
 
-  private final ImmutableMap<StrategyOneOfCase, TradeStrategyAdapter> adapters;
+  private final Provider<Set<TradeStrategyAdapter>> adapters;
   private final StrategyNegationHandler negationHandler;
 
   @Inject
   CompositeTradeStrategyAdapter(
-      Set<TradeStrategyAdapter> adapters, StrategyNegationHandler negationHandler) {
-    this.adapters = Maps.uniqueIndex(adapters, TradeStrategyAdapter::strategyOneOfCase);
+      Provider<Set<TradeStrategyAdapter>> adapters, StrategyNegationHandler negationHandler) {
+    this.adapters = adapters;
     this.negationHandler = negationHandler;
   }
 
@@ -70,12 +69,14 @@ class CompositeTradeStrategyAdapter implements TradeStrategyAdapter {
     return negationHandler.negate(strategy, compositeStrategy.getNegation());
   }
 
-  private StrategyJoiner getStrategyJoiner(Joiner joiner) {
-    return JOINERS.get(joiner);
+  private TradeStrategyAdapter getAdapter(TradeStrategy tradeStrategy) {
+    return adapters.get().stream()
+        .filter(adapter -> adapter.strategyOneOfCase().equals(tradeStrategy.getStrategyOneOfCase()))
+        .collect(onlyElement());
   }
 
-  private TradeStrategyAdapter getAdapter(TradeStrategy tradeStrategy) {
-    return adapters.get(tradeStrategy.getStrategyOneOfCase());
+  private StrategyJoiner getStrategyJoiner(Joiner joiner) {
+    return JOINERS.get(joiner);
   }
 
   private ImmutableSet<TradeStrategy> compositeStrategies(ImmutableSet<TradeStrategy> strategies) {
@@ -96,9 +97,7 @@ class CompositeTradeStrategyAdapter implements TradeStrategyAdapter {
 
   private ImmutableSet<TradeStrategy> strategies() {
     ImmutableSet<TradeStrategy> strategies =
-        adapters.values().stream()
-            .flatMap(TradeStrategyAdapter::generate)
-            .collect(toImmutableSet());
+        adapters.get().stream().flatMap(TradeStrategyAdapter::generate).collect(toImmutableSet());
     ImmutableSet<TradeStrategy> negatedStrategies =
         allOf(Negation.class).stream()
             .filter(negation -> !negation.equals(Negation.UNSPECIFIED))
@@ -117,11 +116,9 @@ class CompositeTradeStrategyAdapter implements TradeStrategyAdapter {
 
   @AutoValue
   abstract static class StrategyJoiner {
-    static StrategyJoiner create(Joiner joiner, BinaryOperator<Strategy> operator) {
-      return new AutoValue_CompositeTradeStrategyAdapter_StrategyJoiner(joiner, operator);
+    static StrategyJoiner create(BinaryOperator<Strategy> operator) {
+      return new AutoValue_CompositeTradeStrategyAdapter_StrategyJoiner(operator);
     }
-
-    abstract Joiner joiner();
 
     abstract BinaryOperator<Strategy> operator();
 
