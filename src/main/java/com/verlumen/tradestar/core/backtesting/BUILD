@@ -31,7 +31,9 @@ java_library(
     visibility = ["//visibility:public"],
     deps = [
         ":backtester",
+        ":test_result_factory",
         "//src/main/java/com/verlumen/tradestar/core/strategies/adapters:adapters_module",
+        "//src/main/java/com/verlumen/tradestar/core/strategies/adapters:trade_strategy_adapter",
         "@maven//:com_google_guava_guava",
         "@maven//:com_google_inject_guice",
     ],
