@@ -27,5 +27,6 @@ java_library(
     deps = [
         "@maven//:com_google_guava_guava",
         "@tradestar_protos//:candles_java_proto",
+        "@tradestar_protos//:strategies_java_proto",
     ],
 )

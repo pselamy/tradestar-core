@@ -7,5 +7,7 @@ public class GeneratorsModule extends AbstractModule {
   @Override
   protected void configure() {
     install(new AdaptersModule());
+
+    bind(TradeStrategyGenerator.class).to(AdapterBasedTradeStrategyGenerator.class);
   }
 }
