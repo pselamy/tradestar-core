@@ -14,3 +14,12 @@ java_test(
         "@tradestar_protos//:strategies_java_proto",
     ],
 )
+
+java_test(
+    name = "BacktestingModuleTest",
+    srcs = ["BacktestingModuleTest.java"],
+    deps = [
+        "//src/main/java/com/verlumen/tradestar/core/backtesting:backtesting_module",
+        "@maven//:com_google_inject_guice",
+    ],
+)
