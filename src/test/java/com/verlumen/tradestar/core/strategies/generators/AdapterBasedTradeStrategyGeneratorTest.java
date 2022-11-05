@@ -29,7 +29,7 @@ import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(TestParameterInjector.class)
-public class TradeStrategyGeneratorTest {
+public class AdapterBasedTradeStrategyGeneratorTest {
   private static final Strategy ADX_STRATEGY =
       new BaseStrategy(new BooleanRule(true), new BooleanRule(true));
   private static final TradeStrategy ADX_TRADE_STRATEGY =
@@ -51,7 +51,7 @@ public class TradeStrategyGeneratorTest {
 
   private static final ImmutableListMultimap<StrategyOneOfCase, TradeStrategyAdapter>
       ADAPTERS_BY_ONE_OF_CASE = Multimaps.index(ADAPTERS, TradeStrategyAdapter::strategyOneOfCase);
-  @Inject private TradeStrategyGenerator tradeStrategyGenerator;
+  @Inject private AdapterBasedTradeStrategyGenerator tradeStrategyGenerator;
 
   @Before
   public void setUp() {
@@ -91,7 +91,7 @@ public class TradeStrategyGeneratorTest {
         StrategyOneOfCase strategyOneOfCase,
         Function<TradeStrategy, Strategy> strategyFunction,
         TradeStrategy... strategies) {
-      return new AutoValue_TradeStrategyGeneratorTest_FakeAdapter(
+      return new AutoValue_AdapterBasedTradeStrategyGeneratorTest_FakeAdapter(
           strategyOneOfCase, strategyFunction, ImmutableSet.copyOf(strategies));
     }
 
