@@ -8,10 +8,8 @@ import com.verlumen.tradestar.protos.strategies.TradeStrategyTestResult.MaxDrawd
 import com.verlumen.tradestar.protos.strategies.TradeStrategyTestResult.PositionReport;
 import com.verlumen.tradestar.protos.strategies.TradeStrategyTestResult.ProfitLossReport;
 import com.verlumen.tradestar.protos.strategies.TradeStrategyTestResult.ReturnReport;
-import org.ta4j.core.AnalysisCriterion;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.TradingRecord;
-import org.ta4j.core.num.Num;
 
 import java.io.Serializable;
 
@@ -43,9 +41,9 @@ class TestResultFactory implements Serializable {
     @Memoized
     MaxDrawdownReport maxDrawdownReport() {
       return MaxDrawdownReport.newBuilder()
-              .setAmount(doubleValue(Criterion.MAX_DRAWDOWN))
-              .setReturn(doubleValue(Criterion.RETURN_OVER_MAX_DRAWDOWN))
-              .build();
+          .setAmount(doubleValue(Criterion.MAX_DRAWDOWN))
+          .setReturn(doubleValue(Criterion.RETURN_OVER_MAX_DRAWDOWN))
+          .build();
     }
 
     @Memoized

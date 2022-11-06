@@ -16,7 +16,6 @@ import org.ta4j.core.TradingRecord;
 
 import java.io.Serializable;
 import java.util.Set;
-import java.util.function.Function;
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static com.google.common.collect.MoreCollectors.onlyElement;

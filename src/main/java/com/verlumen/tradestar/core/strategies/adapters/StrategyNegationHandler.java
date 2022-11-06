@@ -10,7 +10,8 @@ import java.util.function.BiFunction;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-public class StrategyNegationHandler implements BiFunction<Strategy, Negation, Strategy>, Serializable {
+public class StrategyNegationHandler
+    implements BiFunction<Strategy, Negation, Strategy>, Serializable {
   @Override
   public Strategy apply(Strategy strategy, Negation negation) {
     checkArgument(!Strings.isNullOrEmpty(strategy.getName()));
