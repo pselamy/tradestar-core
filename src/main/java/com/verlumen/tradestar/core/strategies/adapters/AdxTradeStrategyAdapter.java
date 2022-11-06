@@ -50,7 +50,7 @@ class AdxTradeStrategyAdapter implements TradeStrategyAdapter {
 
   @Override
   public Strategy toTa4jStrategy(TradeStrategy tradeStrategy, BarSeries barSeries) {
-    checkArgument(tradeStrategy.getStrategyOneOfCase() == StrategyOneOfCase.ADX);
+    checkArgument(StrategyOneOfCase.ADX.equals(tradeStrategy.getStrategyOneOfCase()));
     TradeStrategy.ADX params = tradeStrategy.getAdx();
     ADXIndicator adxIndicator = new ADXIndicator(barSeries, params.getBarCount());
     Rule buyRule =
@@ -69,6 +69,7 @@ class AdxTradeStrategyAdapter implements TradeStrategyAdapter {
         String.format(
             "ADX-ENTER-%s-EXIT-%s", params.getBuySignalStrength(), params.getSellSignalStrength());
     BaseStrategy strategy = new BaseStrategy(strategyName, buyRule, sellRule);
+    strategy.setUnstablePeriod(params.getBarCount() - 1);
     return negationHandler.apply(strategy, tradeStrategy.getNegation());
   }
 
