@@ -65,7 +65,10 @@ class AdxTradeStrategyAdapter implements TradeStrategyAdapter {
           SignalStrength signalStrength = AdxLevel.of(adxValue).signalStrength;
           return signalStrength.getNumber() <= params.getSellSignalStrength().getNumber();
         };
-    BaseStrategy strategy = new BaseStrategy(buyRule, sellRule);
+    String strategyName =
+        String.format(
+            "ADX-ENTER-%s-EXIT-%s", params.getBuySignalStrength(), params.getSellSignalStrength());
+    BaseStrategy strategy = new BaseStrategy(strategyName, buyRule, sellRule);
     return negationHandler.apply(strategy, tradeStrategy.getNegation());
   }
 
