@@ -40,15 +40,16 @@ class TestResultFactory implements Serializable {
     }
 
     @Memoized
-    MaxDrawdownReport maxDrawdownReport() {
+    Optional<MaxDrawdownReport> maxDrawdownReport() {
       MaxDrawdownReport.Builder builder = MaxDrawdownReport.newBuilder();
       doubleValue(Criterion.MAX_DRAWDOWN).ifPresent(builder::setAmount);
       doubleValue(Criterion.RETURN_OVER_MAX_DRAWDOWN).ifPresent(builder::setReturn);
-      return builder.build();
+      return Optional.of(builder.build())
+          .filter(report -> !report.equals(MaxDrawdownReport.getDefaultInstance()));
     }
 
     @Memoized
-    PositionReport positionReport() {
+    Optional<PositionReport> positionReport() {
       return intValue(Criterion.NUM_POS)
           .filter(positionCount -> positionCount > 0)
           .map(PositionReport.newBuilder()::setCount)
@@ -62,12 +63,11 @@ class TestResultFactory implements Serializable {
               builder ->
                   builder.setWinning(
                       max(builder.getCount() - builder.getBreakEven() - builder.getLosing(), 0)))
-          .orElseGet(PositionReport::newBuilder)
-          .build();
+          .map(PositionReport.Builder::build);
     }
 
     @Memoized
-    ProfitLossReport profitLossReport() {
+    Optional<ProfitLossReport> profitLossReport() {
       ProfitLossReport.Builder builder = ProfitLossReport.newBuilder();
       doubleValue(Criterion.PROFIT_LOSS).ifPresent(builder::setAmount);
       doubleValue(Criterion.AVG_LOSS).ifPresent(builder::setAverageLoss);
@@ -79,27 +79,29 @@ class TestResultFactory implements Serializable {
       doubleValue(Criterion.NET_PROFIT).ifPresent(builder::setNetProfit);
       doubleValue(Criterion.PROFIT_LOSS_PERCENTAGE).ifPresent(builder::setPercentage);
       doubleValue(Criterion.PROFIT_LOSS_RATIO).ifPresent(builder::setRatio);
-      return builder.build();
+      return Optional.of(builder.build())
+          .filter(report -> !report.equals(ProfitLossReport.getDefaultInstance()));
     }
 
     @Memoized
-    ReturnReport returnReport() {
+    Optional<ReturnReport> returnReport() {
       ReturnReport.Builder builder = ReturnReport.newBuilder();
       doubleValue(Criterion.AVG_RETURN_PER_BAR).ifPresent(builder::setAveragePerBar);
       doubleValue(Criterion.BUY_AND_HOLD_RETURN).ifPresent(builder::setBuyAndHold);
       doubleValue(Criterion.EXPECTANCY).ifPresent(builder::setExpectancy);
       doubleValue(Criterion.GROSS_RETURN).ifPresent(builder::setGross);
-      return builder.build();
+      return Optional.of(builder.build())
+          .filter(report -> !report.equals(ReturnReport.getDefaultInstance()));
     }
 
     @Memoized
     TradeStrategyTestResult testResult() {
-      return TradeStrategyTestResult.newBuilder()
-          .setMaxDrawdownReport(maxDrawdownReport())
-          .setPositionReport(positionReport())
-          .setProfitLossReport(profitLossReport())
-          .setReturnReport(returnReport())
-          .build();
+      TradeStrategyTestResult.Builder builder = TradeStrategyTestResult.newBuilder();
+      maxDrawdownReport().ifPresent(builder::setMaxDrawdownReport);
+      positionReport().ifPresent(builder::setPositionReport);
+      profitLossReport().ifPresent(builder::setProfitLossReport);
+      returnReport().ifPresent(builder::setReturnReport);
+      return builder.build();
     }
   }
 }
