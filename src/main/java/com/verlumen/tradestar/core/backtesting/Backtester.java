@@ -3,6 +3,7 @@ package com.verlumen.tradestar.core.backtesting;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
+import com.verlumen.tradestar.core.candles.GranularitySpec;
 import com.verlumen.tradestar.core.shared.CandleComparators;
 import com.verlumen.tradestar.core.strategies.adapters.TradeStrategyAdapter;
 import com.verlumen.tradestar.core.tradehistory.BarSeriesFactory;
@@ -19,7 +20,10 @@ import java.io.Serializable;
 import java.util.Set;
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
+import static com.google.common.collect.Iterables.getFirst;
+import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.MoreCollectors.onlyElement;
+import static java.time.Instant.ofEpochSecond;
 
 public class Backtester implements Serializable {
   private final ImmutableSet<TradeStrategyAdapter> adapters;
@@ -49,11 +53,26 @@ public class Backtester implements Serializable {
             .map(Candle::getCandleDescriptor)
             .distinct()
             .collect(onlyElement());
-    BarSeriesManager seriesManager = createBarSeriesManager(params.candles());
+    ImmutableSet<Candle> candles =
+        params.candles().stream()
+            .sorted(CandleComparators.START_TIME_ASCENDING)
+            .collect(toImmutableSet());
+    BarSeriesManager seriesManager = createBarSeriesManager(candles);
     BarSeries series = seriesManager.getBarSeries();
     Strategy strategy = createStrategy(params.strategy(), series, adapters);
     TradingRecord record = seriesManager.run(strategy);
-    return testResultFactory.create(candleDescriptor, params.strategy(), series, record);
+    GranularitySpec granularitySpec = GranularitySpec.create(candleDescriptor.getGranularity());
+    return testResultFactory.create(
+        ofEpochSecond(getStartSeconds(getFirst(candles, Candle.getDefaultInstance()))),
+        ofEpochSecond(getStartSeconds(getLast(candles)) + granularitySpec.seconds()),
+        candleDescriptor,
+        params.strategy(),
+        series,
+        record);
+  }
+
+  private long getStartSeconds(Candle candles) {
+    return candles.getStart().getSeconds();
   }
 
   static class BarSeriesManagerFactory {
