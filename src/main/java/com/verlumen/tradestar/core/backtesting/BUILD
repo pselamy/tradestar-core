@@ -19,6 +19,7 @@ java_library(
         "//src/main/java/com/verlumen/tradestar/core/strategies/adapters:trade_strategy_adapter",
         "//src/main/java/com/verlumen/tradestar/core/tradehistory:bar_series_factory",
         "@maven//:com_google_guava_guava",
+        "@maven//:com_google_inject_guice",
         "@maven//:org_ta4j_ta4j_core",
         "@tradestar_protos//:candles_java_proto",
         "@tradestar_protos//:strategies_java_proto",
@@ -30,7 +31,6 @@ java_library(
     srcs = ["BacktestingModule.java"],
     visibility = ["//visibility:public"],
     deps = [
-        ":backtester",
         ":test_result_factory",
         "//src/main/java/com/verlumen/tradestar/core/strategies/adapters:adapters_module",
         "//src/main/java/com/verlumen/tradestar/core/strategies/adapters:trade_strategy_adapter",
@@ -42,6 +42,7 @@ java_library(
 java_library(
     name = "test_result_factory",
     srcs = ["TestResultFactory.java"],
+    visibility = ["//:__subpackages__"],
     deps = [
         ":analysis_criteria",
         "//:autovalue",

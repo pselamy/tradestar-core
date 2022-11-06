@@ -1,8 +1,8 @@
 package com.verlumen.tradestar.core.backtesting;
 
 import com.google.auto.value.AutoValue;
-import com.google.auto.value.extension.serializable.SerializableAutoValue;
 import com.google.common.collect.ImmutableSet;
+import com.google.inject.Inject;
 import com.verlumen.tradestar.core.shared.CandleComparators;
 import com.verlumen.tradestar.core.strategies.adapters.TradeStrategyAdapter;
 import com.verlumen.tradestar.core.tradehistory.BarSeriesFactory;
@@ -15,32 +15,20 @@ import org.ta4j.core.Strategy;
 import org.ta4j.core.TradingRecord;
 
 import java.io.Serializable;
+import java.util.Set;
 import java.util.function.Function;
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static com.google.common.collect.MoreCollectors.onlyElement;
 
-@AutoValue
-@SerializableAutoValue
-public abstract class Backtester implements Serializable {
-  public static Backtester create(
-      ImmutableSet<TradeStrategyAdapter> adapters, TestResultFactory testResultFactory) {
-    return create(params -> runTest(params, testResultFactory, adapters));
-  }
+public class Backtester implements Serializable {
+  private final ImmutableSet<TradeStrategyAdapter> adapters;
+  private final TestResultFactory testResultFactory;
 
-  public static Backtester create(Function<Params, TradeStrategyTestResult> testResultFunction) {
-    return new AutoValue_Backtester(testResultFunction);
-  }
-
-  private static TradeStrategyTestResult runTest(
-      Params params,
-      TestResultFactory testResultFactory,
-      ImmutableSet<TradeStrategyAdapter> adapters) {
-    BarSeriesManager seriesManager = createBarSeriesManager(params.candles());
-    BarSeries series = seriesManager.getBarSeries();
-    Strategy strategy = createStrategy(params.strategy(), series, adapters);
-    TradingRecord record = seriesManager.run(strategy);
-    return testResultFactory.create(series, record);
+  @Inject
+  Backtester(Set<TradeStrategyAdapter> adapters, TestResultFactory testResultFactory) {
+    this.adapters = ImmutableSet.copyOf(adapters);
+    this.testResultFactory = testResultFactory;
   }
 
   private static BarSeriesManager createBarSeriesManager(ImmutableSet<Candle> candles) {
@@ -55,10 +43,12 @@ public abstract class Backtester implements Serializable {
         .toTa4jStrategy(strategy, series);
   }
 
-  abstract Function<Params, TradeStrategyTestResult> testResultFunction();
-
   public TradeStrategyTestResult test(Params params) {
-    return testResultFunction().apply(params);
+    BarSeriesManager seriesManager = createBarSeriesManager(params.candles());
+    BarSeries series = seriesManager.getBarSeries();
+    Strategy strategy = createStrategy(params.strategy(), series, adapters);
+    TradingRecord record = seriesManager.run(strategy);
+    return testResultFactory.create(series, record);
   }
 
   static class BarSeriesManagerFactory {

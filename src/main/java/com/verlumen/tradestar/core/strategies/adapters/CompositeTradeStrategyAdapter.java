@@ -1,10 +1,10 @@
 package com.verlumen.tradestar.core.strategies.adapters;
 
+import com.google.auto.value.AutoValue;
+import com.google.auto.value.extension.serializable.SerializableAutoValue;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.verlumen.tradestar.protos.strategies.TradeStrategy;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.Strategy;
@@ -22,7 +22,9 @@ import static com.verlumen.tradestar.protos.strategies.TradeStrategy.*;
 import static com.verlumen.tradestar.protos.strategies.TradeStrategy.Composite.Joiner;
 import static java.util.EnumSet.allOf;
 
-class CompositeTradeStrategyAdapter implements TradeStrategyAdapter {
+@AutoValue
+@SerializableAutoValue
+public abstract class CompositeTradeStrategyAdapter implements TradeStrategyAdapter {
   private static final ImmutableMap<Joiner, StrategyJoiner> JOINERS =
       ImmutableMap.of(
           Joiner.AND, Strategy::and,
@@ -31,15 +33,15 @@ class CompositeTradeStrategyAdapter implements TradeStrategyAdapter {
               (strategy1, strategy2) ->
                   strategy1.and(strategy2).opposite().and(strategy1.or(strategy2)));
 
-  private final Provider<Set<TradeStrategyAdapter>> adapters;
-  private final StrategyNegationHandler negationHandler;
-
-  @Inject
-  CompositeTradeStrategyAdapter(
-      Provider<Set<TradeStrategyAdapter>> adapters, StrategyNegationHandler negationHandler) {
-    this.adapters = adapters;
-    this.negationHandler = negationHandler;
+  public static CompositeTradeStrategyAdapter create(
+      Set<TradeStrategyAdapter> adapters, StrategyNegationHandler negationHandler) {
+    return new AutoValue_CompositeTradeStrategyAdapter(
+        ImmutableSet.copyOf(adapters), negationHandler);
   }
+
+  abstract ImmutableSet<TradeStrategyAdapter> adapters();
+
+  abstract StrategyNegationHandler negationHandler();
 
   @Override
   public Stream<TradeStrategy> generate() {
@@ -64,11 +66,11 @@ class CompositeTradeStrategyAdapter implements TradeStrategyAdapter {
             .collect(toImmutableSet());
     compositeStrategy.getComposite().getJoiner();
     Strategy strategy = getStrategyJoiner(joiner).join(strategies);
-    return negationHandler.negate(strategy, compositeStrategy.getNegation());
+    return negationHandler().apply(strategy, compositeStrategy.getNegation());
   }
 
   private TradeStrategyAdapter getAdapter(TradeStrategy tradeStrategy) {
-    return adapters.get().stream()
+    return adapters().stream()
         .filter(adapter -> adapter.strategyOneOfCase().equals(tradeStrategy.getStrategyOneOfCase()))
         .collect(onlyElement());
   }
@@ -95,7 +97,7 @@ class CompositeTradeStrategyAdapter implements TradeStrategyAdapter {
 
   private ImmutableSet<TradeStrategy> strategies() {
     ImmutableSet<TradeStrategy> strategies =
-        adapters.get().stream().flatMap(TradeStrategyAdapter::generate).collect(toImmutableSet());
+        adapters().stream().flatMap(TradeStrategyAdapter::generate).collect(toImmutableSet());
     ImmutableSet<TradeStrategy> negatedStrategies =
         allOf(Negation.class).stream()
             .filter(negation -> !negation.equals(Negation.UNSPECIFIED))

@@ -1,13 +1,14 @@
 java_test(
-    name = "BacktesterImplTest",
-    srcs = ["BacktesterImplTest.java"],
+    name = "BacktesterTest",
+    srcs = ["BacktesterTest.java"],
     deps = [
         "//:autovalue",
         "//src/main/java/com/verlumen/tradestar/core/backtesting:backtester",
-        "//src/main/java/com/verlumen/tradestar/core/backtesting:backtester_impl",
+        "//src/main/java/com/verlumen/tradestar/core/backtesting:test_result_factory",
         "//src/main/java/com/verlumen/tradestar/core/strategies/adapters:trade_strategy_adapter",
         "@maven//:com_google_inject_extensions_guice_testlib",
         "@maven//:com_google_inject_guice",
+        "@maven//:com_google_testparameterinjector_test_parameter_injector",
         "@maven//:com_google_truth_truth",
         "@maven//:org_ta4j_ta4j_core",
         "@tradestar_protos//:candles_java_proto",

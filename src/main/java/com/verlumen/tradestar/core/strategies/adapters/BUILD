@@ -6,7 +6,6 @@ java_library(
     ],
     deps = [
         ":adx_trade_strategy_adapter",
-        ":composite_trade_strategy_adapter",
         ":trade_strategy_adapter",
         "@maven//:com_google_guava_guava",
         "@maven//:com_google_inject_guice",
@@ -34,9 +33,11 @@ java_library(
 java_library(
     name = "composite_trade_strategy_adapter",
     srcs = ["CompositeTradeStrategyAdapter.java"],
+    visibility = ["//:__subpackages__"],
     deps = [
         ":strategy_negation_handler",
         ":trade_strategy_adapter",
+        "//:autovalue",
         "@maven//:com_google_guava_guava",
         "@maven//:com_google_inject_guice",
         "@maven//:org_ta4j_ta4j_core",
@@ -59,6 +60,7 @@ java_library(
     srcs = [
         "StrategyNegationHandler.java",
     ],
+    visibility = ["//:__subpackages__"],
     deps = [
         "@maven//:com_google_guava_guava",
         "@maven//:org_ta4j_ta4j_core",

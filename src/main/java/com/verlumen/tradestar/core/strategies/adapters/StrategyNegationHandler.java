@@ -5,10 +5,14 @@ import com.verlumen.tradestar.protos.strategies.TradeStrategy.Negation;
 import org.ta4j.core.BaseStrategy;
 import org.ta4j.core.Strategy;
 
+import java.io.Serializable;
+import java.util.function.BiFunction;
+
 import static com.google.common.base.Preconditions.checkArgument;
 
-class StrategyNegationHandler {
-  Strategy negate(Strategy strategy, Negation negation) {
+public class StrategyNegationHandler implements BiFunction<Strategy, Negation, Strategy>, Serializable {
+  @Override
+  public Strategy apply(Strategy strategy, Negation negation) {
     checkArgument(!Strings.isNullOrEmpty(strategy.getName()));
     String name = strategy.getName() + "-OPPOSITE_" + negation.name();
 

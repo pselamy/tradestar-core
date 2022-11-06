@@ -6,6 +6,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
 @RunWith(JUnit4.class)
 public class BacktestingModuleTest {
   private BacktestingModule underTest;
@@ -23,5 +27,14 @@ public class BacktestingModuleTest {
   @Test
   public void module_providesBacktester() {
     Guice.createInjector(underTest).getInstance(Backtester.class);
+  }
+
+  @Test
+  public void module_providesSerializableBacktester() throws IOException {
+    // Arrange
+    Backtester backtester = Guice.createInjector(underTest).getInstance(Backtester.class);
+
+    // Act
+    new ObjectOutputStream(new ByteArrayOutputStream()).writeObject(backtester);
   }
 }

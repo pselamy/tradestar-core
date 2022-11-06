@@ -15,5 +15,15 @@ public interface TradeStrategyGenerator {
     return generate(ImmutableSet.copyOf(oneOfCases));
   }
 
-  Stream<TradeStrategy> generate(ImmutableSet<TradeStrategy.StrategyOneOfCase> oneOfCases);
+  default Stream<TradeStrategy> generate(ImmutableSet<TradeStrategy.StrategyOneOfCase> oneOfCases) {
+    return generate(oneOfCases, Directive.UNSPECIFIED);
+  }
+
+  Stream<TradeStrategy> generate(
+      ImmutableSet<TradeStrategy.StrategyOneOfCase> oneOfCases, Directive directive);
+
+  enum Directive {
+    UNSPECIFIED,
+    INCLUDE_COMPOSITE
+  }
 }
