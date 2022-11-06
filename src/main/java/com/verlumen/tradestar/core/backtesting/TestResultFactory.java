@@ -1,7 +1,6 @@
 package com.verlumen.tradestar.core.backtesting;
 
 import com.google.auto.value.AutoValue;
-import com.google.auto.value.extension.memoized.Memoized;
 import com.verlumen.tradestar.core.backtesting.AnalysisCriteria.Criterion;
 import com.verlumen.tradestar.protos.candles.CandleDescriptor;
 import com.verlumen.tradestar.protos.strategies.TradeStrategy;
@@ -20,7 +19,7 @@ import java.util.Optional;
 import static java.lang.Math.max;
 
 class TestResultFactory implements Serializable {
-  public TradeStrategyTestResult create(
+  public static TradeStrategyTestResult create(
       Instant startInclusive,
       Instant endExclusive,
       CandleDescriptor candleDescriptor,
@@ -65,7 +64,6 @@ class TestResultFactory implements Serializable {
       return criterion.intValue(series(), record());
     }
 
-    @Memoized
     Optional<MaxDrawdownReport> maxDrawdownReport() {
       MaxDrawdownReport.Builder builder = MaxDrawdownReport.newBuilder();
       doubleValue(Criterion.MAX_DRAWDOWN).ifPresent(builder::setAmount);
@@ -74,7 +72,6 @@ class TestResultFactory implements Serializable {
           .filter(report -> !report.equals(MaxDrawdownReport.getDefaultInstance()));
     }
 
-    @Memoized
     Optional<PositionReport> positionReport() {
       return intValue(Criterion.NUM_POS)
           .filter(positionCount -> positionCount > 0)
@@ -92,7 +89,6 @@ class TestResultFactory implements Serializable {
           .map(PositionReport.Builder::build);
     }
 
-    @Memoized
     Optional<ProfitLossReport> profitLossReport() {
       ProfitLossReport.Builder builder = ProfitLossReport.newBuilder();
       doubleValue(Criterion.PROFIT_LOSS).ifPresent(builder::setAmount);
@@ -109,7 +105,6 @@ class TestResultFactory implements Serializable {
           .filter(report -> !report.equals(ProfitLossReport.getDefaultInstance()));
     }
 
-    @Memoized
     Optional<ReturnReport> returnReport() {
       ReturnReport.Builder builder = ReturnReport.newBuilder();
       doubleValue(Criterion.AVG_RETURN_PER_BAR).ifPresent(builder::setAveragePerBar);
@@ -120,7 +115,6 @@ class TestResultFactory implements Serializable {
           .filter(report -> !report.equals(ReturnReport.getDefaultInstance()));
     }
 
-    @Memoized
     TradeStrategyTestResult testResult() {
       TradeStrategyTestResult.Builder builder =
           TradeStrategyTestResult.newBuilder()
