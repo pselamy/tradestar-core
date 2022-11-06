@@ -14,29 +14,40 @@ import org.ta4j.core.BarSeries;
 import org.ta4j.core.TradingRecord;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Optional;
 
 import static java.lang.Math.max;
 
 class TestResultFactory implements Serializable {
   public TradeStrategyTestResult create(
+      Instant startInclusive,
+      Instant endExclusive,
       CandleDescriptor candleDescriptor,
       TradeStrategy tradeStrategy,
       BarSeries series,
       TradingRecord record) {
-    return Specimen.create(candleDescriptor, tradeStrategy, series, record).testResult();
+    return Specimen.create(
+            startInclusive, endExclusive, candleDescriptor, tradeStrategy, series, record)
+        .testResult();
   }
 
   @AutoValue
   abstract static class Specimen {
     private static Specimen create(
+        Instant startInclusive,
+        Instant endExclusive,
         CandleDescriptor candleDescriptor,
         TradeStrategy tradeStrategy,
         BarSeries series,
         TradingRecord record) {
       return new AutoValue_TestResultFactory_Specimen(
-          candleDescriptor, tradeStrategy, series, record);
+          startInclusive, endExclusive, candleDescriptor, tradeStrategy, series, record);
     }
+
+    abstract Instant startInclusive();
+
+    abstract Instant endExclusive();
 
     abstract CandleDescriptor candleDescriptor();
 
@@ -115,6 +126,8 @@ class TestResultFactory implements Serializable {
           TradeStrategyTestResult.newBuilder()
               .setCandleDescriptor(candleDescriptor())
               .setStrategy(tradeStrategy());
+      builder.getStartBuilder().setSeconds(startInclusive().getEpochSecond());
+      builder.getEndBuilder().setSeconds(endExclusive().getEpochSecond());
       maxDrawdownReport().ifPresent(builder::setMaxDrawdownReport);
       positionReport().ifPresent(builder::setPositionReport);
       profitLossReport().ifPresent(builder::setProfitLossReport);
