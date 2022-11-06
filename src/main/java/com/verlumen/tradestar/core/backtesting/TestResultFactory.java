@@ -3,6 +3,7 @@ package com.verlumen.tradestar.core.backtesting;
 import com.google.auto.value.AutoValue;
 import com.google.auto.value.extension.memoized.Memoized;
 import com.verlumen.tradestar.core.backtesting.AnalysisCriteria.Criterion;
+import com.verlumen.tradestar.protos.candles.CandleDescriptor;
 import com.verlumen.tradestar.protos.strategies.TradeStrategy;
 import com.verlumen.tradestar.protos.strategies.TradeStrategyTestResult;
 import com.verlumen.tradestar.protos.strategies.TradeStrategyTestResult.MaxDrawdownReport;
@@ -19,16 +20,25 @@ import static java.lang.Math.max;
 
 class TestResultFactory implements Serializable {
   public TradeStrategyTestResult create(
-      TradeStrategy tradeStrategy, BarSeries series, TradingRecord record) {
-    return Specimen.create(tradeStrategy, series, record).testResult();
+      CandleDescriptor candleDescriptor,
+      TradeStrategy tradeStrategy,
+      BarSeries series,
+      TradingRecord record) {
+    return Specimen.create(candleDescriptor, tradeStrategy, series, record).testResult();
   }
 
   @AutoValue
   abstract static class Specimen {
     private static Specimen create(
-        TradeStrategy tradeStrategy, BarSeries series, TradingRecord record) {
-      return new AutoValue_TestResultFactory_Specimen(tradeStrategy, series, record);
+        CandleDescriptor candleDescriptor,
+        TradeStrategy tradeStrategy,
+        BarSeries series,
+        TradingRecord record) {
+      return new AutoValue_TestResultFactory_Specimen(
+          candleDescriptor, tradeStrategy, series, record);
     }
+
+    abstract CandleDescriptor candleDescriptor();
 
     abstract TradeStrategy tradeStrategy();
 
@@ -102,7 +112,9 @@ class TestResultFactory implements Serializable {
     @Memoized
     TradeStrategyTestResult testResult() {
       TradeStrategyTestResult.Builder builder =
-          TradeStrategyTestResult.newBuilder().setStrategy(tradeStrategy());
+          TradeStrategyTestResult.newBuilder()
+              .setCandleDescriptor(candleDescriptor())
+              .setStrategy(tradeStrategy());
       maxDrawdownReport().ifPresent(builder::setMaxDrawdownReport);
       positionReport().ifPresent(builder::setPositionReport);
       profitLossReport().ifPresent(builder::setProfitLossReport);

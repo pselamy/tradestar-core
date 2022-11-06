@@ -49,7 +49,7 @@ public class Backtester implements Serializable {
     BarSeries series = seriesManager.getBarSeries();
     Strategy strategy = createStrategy(params.strategy(), series, adapters);
     TradingRecord record = seriesManager.run(strategy);
-    return testResultFactory.create(params.strategy(), series, record);
+    return testResultFactory.create(candleDescriptor, params.strategy(), series, record);
   }
 
   static class BarSeriesManagerFactory {
