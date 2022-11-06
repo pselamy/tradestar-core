@@ -9,6 +9,7 @@ import org.ta4j.core.num.Num;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.util.Optional;
 
 class AnalysisCriteria implements Serializable {
   public enum Criterion {
@@ -49,16 +50,17 @@ class AnalysisCriteria implements Serializable {
       }
     }
 
-    private Num calculate(BarSeries series, TradingRecord tradingRecord) {
-      return getAnalysisCriterion().calculate(series, tradingRecord);
+    private Optional<Num> calculate(BarSeries series, TradingRecord tradingRecord) {
+      return Optional.of(getAnalysisCriterion().calculate(series, tradingRecord))
+          .filter(num -> !num.isNaN() && !num.isZero());
     }
 
-    public double doubleValue(BarSeries series, TradingRecord tradingRecord) {
-      return calculate(series, tradingRecord).doubleValue();
+    public Optional<Double> doubleValue(BarSeries series, TradingRecord tradingRecord) {
+      return calculate(series, tradingRecord).map(Num::doubleValue);
     }
 
-    public int intValue(BarSeries series, TradingRecord tradingRecord) {
-      return calculate(series, tradingRecord).intValue();
+    public Optional<Integer> intValue(BarSeries series, TradingRecord tradingRecord) {
+      return calculate(series, tradingRecord).map(Num::intValue);
     }
   }
 }

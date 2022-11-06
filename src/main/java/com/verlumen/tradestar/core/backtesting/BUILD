@@ -14,6 +14,7 @@ java_library(
     deps = [
         ":test_result_factory",
         "//:autovalue",
+        "//src/main/java/com/verlumen/tradestar/core/candles:granularity_spec",
         "//src/main/java/com/verlumen/tradestar/core/shared:candle_comparators",
         "//src/main/java/com/verlumen/tradestar/core/shared:constants",
         "//src/main/java/com/verlumen/tradestar/core/strategies/adapters:trade_strategy_adapter",
@@ -48,6 +49,7 @@ java_library(
         "//:autovalue",
         "@maven//:com_google_inject_guice",
         "@maven//:org_ta4j_ta4j_core",
+        "@tradestar_protos//:candles_java_proto",
         "@tradestar_protos//:strategies_java_proto",
     ],
 )
