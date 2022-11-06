@@ -27,12 +27,10 @@ import static java.time.Instant.ofEpochSecond;
 
 public class Backtester implements Serializable {
   private final ImmutableSet<TradeStrategyAdapter> adapters;
-  private final TestResultFactory testResultFactory;
 
   @Inject
   Backtester(Set<TradeStrategyAdapter> adapters, TestResultFactory testResultFactory) {
     this.adapters = ImmutableSet.copyOf(adapters);
-    this.testResultFactory = testResultFactory;
   }
 
   private static BarSeriesManager createBarSeriesManager(ImmutableSet<Candle> candles) {
@@ -62,7 +60,7 @@ public class Backtester implements Serializable {
     Strategy strategy = createStrategy(params.strategy(), series, adapters);
     TradingRecord record = seriesManager.run(strategy);
     GranularitySpec granularitySpec = GranularitySpec.create(candleDescriptor.getGranularity());
-    return testResultFactory.create(
+    return TestResultFactory.create(
         ofEpochSecond(getStartSeconds(getFirst(candles, Candle.getDefaultInstance()))),
         ofEpochSecond(getStartSeconds(getLast(candles)) + granularitySpec.seconds()),
         candleDescriptor,
