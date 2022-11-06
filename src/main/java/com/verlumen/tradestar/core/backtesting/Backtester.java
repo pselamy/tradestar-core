@@ -20,7 +20,6 @@ import java.io.Serializable;
 import java.util.Set;
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
-import static com.google.common.collect.Iterables.getFirst;
 import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.MoreCollectors.onlyElement;
 import static java.time.Instant.ofEpochSecond;
@@ -63,7 +62,7 @@ public class Backtester implements Serializable {
     TradingRecord record = seriesManager.run(strategy);
     GranularitySpec granularitySpec = GranularitySpec.create(candleDescriptor.getGranularity());
     return testResultFactory.create(
-        ofEpochSecond(getStartSeconds(getFirst(candles, Candle.getDefaultInstance()))),
+        ofEpochSecond(getStartSeconds(candles.asList().get(0))),
         ofEpochSecond(getStartSeconds(getLast(candles)) + granularitySpec.seconds()),
         candleDescriptor,
         params.strategy(),
@@ -71,8 +70,8 @@ public class Backtester implements Serializable {
         record);
   }
 
-  private long getStartSeconds(Candle candles) {
-    return candles.getStart().getSeconds();
+  private long getStartSeconds(Candle candle) {
+    return candle.getStart().getSeconds();
   }
 
   static class BarSeriesManagerFactory {
