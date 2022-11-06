@@ -1,160 +1,64 @@
 package com.verlumen.tradestar.core.backtesting;
 
-import com.google.inject.Inject;
+import org.ta4j.core.AnalysisCriterion;
+import org.ta4j.core.BarSeries;
+import org.ta4j.core.TradingRecord;
 import org.ta4j.core.analysis.criteria.*;
 import org.ta4j.core.analysis.criteria.pnl.*;
+import org.ta4j.core.num.Num;
 
-class AnalysisCriteria {
-  private final AverageLossCriterion averageLoss;
-  private final AverageProfitCriterion averageProfit;
-  private final AverageReturnPerBarCriterion averageReturnPerBar;
-  private final NumberOfBreakEvenPositionsCriterion numberOfBreakEvenPositions;
-  private final BuyAndHoldReturnCriterion buyAndHoldReturn;
-  private final NumberOfConsecutiveWinningPositionsCriterion numberOfConsecutiveWinningPositions;
-  private final ExpectancyCriterion expectancy;
-  private final GrossLossCriterion grossLoss;
-  private final GrossProfitCriterion grossProfit;
-  private final GrossReturnCriterion grossReturn;
-  private final NumberOfLosingPositionsCriterion numberOfLosingPositions;
-  private final LosingPositionsRatioCriterion losingPositionsRatio;
-  private final MaximumDrawdownCriterion maximumDrawdown;
-  private final NetLossCriterion netLoss;
-  private final NetProfitCriterion netProfit;
-  private final NumberOfPositionsCriterion numberOfPositions;
-  private final ProfitLossCriterion profitLoss;
-  private final ProfitLossPercentageCriterion profitLossPercentage;
-  private final ProfitLossRatioCriterion profitLossRatio;
-  private final ReturnOverMaxDrawdownCriterion returnOverMaxDrawdown;
-  private final WinningPositionsRatioCriterion winningPositionsRatio;
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
 
-  @Inject
-  AnalysisCriteria(
-      AverageLossCriterion averageLoss,
-      AverageProfitCriterion averageProfit,
-      AverageReturnPerBarCriterion averageReturnPerBar,
-      NumberOfBreakEvenPositionsCriterion numberOfBreakEvenPositions,
-      BuyAndHoldReturnCriterion buyAndHoldReturn,
-      NumberOfConsecutiveWinningPositionsCriterion numberOfConsecutiveWinningPositions,
-      ExpectancyCriterion expectancy,
-      GrossLossCriterion grossLoss,
-      GrossProfitCriterion grossProfit,
-      GrossReturnCriterion grossReturn,
-      LosingPositionsRatioCriterion losingPositionsRatio,
-      MaximumDrawdownCriterion maximumDrawdown,
-      NetLossCriterion netLoss,
-      NetProfitCriterion netProfit,
-      NumberOfLosingPositionsCriterion numberOfLosingPositions,
-      NumberOfPositionsCriterion numberOfPositions,
-      ProfitLossCriterion profitLoss,
-      ProfitLossPercentageCriterion profitLossPercentage,
-      ProfitLossRatioCriterion profitLossRatio,
-      ReturnOverMaxDrawdownCriterion returnOverMaxDrawdown,
-      WinningPositionsRatioCriterion winningPositionsRatio) {
-    this.averageLoss = averageLoss;
-    this.averageProfit = averageProfit;
-    this.averageReturnPerBar = averageReturnPerBar;
-    this.numberOfBreakEvenPositions = numberOfBreakEvenPositions;
-    this.buyAndHoldReturn = buyAndHoldReturn;
-    this.numberOfConsecutiveWinningPositions = numberOfConsecutiveWinningPositions;
-    this.expectancy = expectancy;
+class AnalysisCriteria implements Serializable {
+  public enum Criterion {
+    AVG_LOSS(AverageLossCriterion.class),
+    AVG_PROFIT(AverageProfitCriterion.class),
+    AVG_RETURN_PER_BAR(AverageReturnPerBarCriterion.class),
+    NUM_BREAK_EVEN_POS(NumberOfBreakEvenPositionsCriterion.class),
+    BUY_AND_HOLD_RETURN(BuyAndHoldReturnCriterion.class),
+    NUM_CONSEC_WIN_POS(NumberOfConsecutiveWinningPositionsCriterion.class),
+    EXPECTANCY(ExpectancyCriterion.class),
+    GROSS_LOSS(GrossLossCriterion.class),
+    GROSS_PROFIT(GrossProfitCriterion.class),
+    GROSS_RETURN(GrossReturnCriterion.class),
+    LOSING_POS_RATIO(LosingPositionsRatioCriterion.class),
+    MAX_DRAWDOWN(MaximumDrawdownCriterion.class),
+    NET_LOSS(NetLossCriterion.class),
+    NET_PROFIT(NetProfitCriterion.class),
+    NUM_LOSING_POS(NumberOfLosingPositionsCriterion.class),
+    NUM_POS(NumberOfPositionsCriterion.class),
+    PROFIT_LOSS(ProfitLossCriterion.class),
+    PROFIT_LOSS_PERCENTAGE(ProfitLossPercentageCriterion.class),
+    PROFIT_LOSS_RATIO(ProfitLossRatioCriterion.class),
+    RETURN_OVER_MAX_DRAWDOWN(ReturnOverMaxDrawdownCriterion.class),
+    WINNING_POS_RATIO(WinningPositionsRatioCriterion.class);
 
-    this.grossLoss = grossLoss;
-    this.grossProfit = grossProfit;
-    this.grossReturn = grossReturn;
-    this.numberOfLosingPositions = numberOfLosingPositions;
-    this.losingPositionsRatio = losingPositionsRatio;
-    this.maximumDrawdown = maximumDrawdown;
-    this.netLoss = netLoss;
-    this.netProfit = netProfit;
-    this.numberOfPositions = numberOfPositions;
-    this.profitLoss = profitLoss;
-    this.profitLossPercentage = profitLossPercentage;
-    this.profitLossRatio = profitLossRatio;
-    this.returnOverMaxDrawdown = returnOverMaxDrawdown;
-    this.winningPositionsRatio = winningPositionsRatio;
-  }
+    private final Class<? extends AnalysisCriterion> criterionClass;
 
-  AverageLossCriterion averageLoss() {
-    return averageLoss;
-  }
+    Criterion(Class<? extends AnalysisCriterion> criterionClass) {
+      this.criterionClass = criterionClass;
+    }
 
-  AverageProfitCriterion averageProfit() {
-    return averageProfit;
-  }
+    private AnalysisCriterion getAnalysisCriterion() {
+      try {
+        Constructor<?> ctor = criterionClass.getConstructor();
+        return (AnalysisCriterion) ctor.newInstance(new Object[] {});
+      } catch (Exception e) {
+        throw new IllegalStateException(e);
+      }
+    }
 
-  AverageReturnPerBarCriterion averageReturnPerBar() {
-    return averageReturnPerBar;
-  }
+    private Num calculate(BarSeries series, TradingRecord tradingRecord) {
+      return getAnalysisCriterion().calculate(series, tradingRecord);
+    }
 
-  NumberOfBreakEvenPositionsCriterion numberOfBreakEvenPositions() {
-    return numberOfBreakEvenPositions;
-  }
+    public double doubleValue(BarSeries series, TradingRecord tradingRecord) {
+      return calculate(series, tradingRecord).doubleValue();
+    }
 
-  BuyAndHoldReturnCriterion buyAndHoldReturn() {
-    return buyAndHoldReturn;
-  }
-
-  NumberOfConsecutiveWinningPositionsCriterion numberOfConsecutiveWinningPositions() {
-    return numberOfConsecutiveWinningPositions;
-  }
-
-  ExpectancyCriterion expectancy() {
-    return expectancy;
-  }
-
-  GrossLossCriterion grossLoss() {
-    return grossLoss;
-  }
-
-  GrossProfitCriterion grossProfit() {
-    return grossProfit;
-  }
-
-  GrossReturnCriterion grossReturn() {
-    return grossReturn;
-  }
-
-  NumberOfLosingPositionsCriterion numberOfLosingPositions() {
-    return numberOfLosingPositions;
-  }
-
-  LosingPositionsRatioCriterion losingPositionsRatio() {
-    return losingPositionsRatio;
-  }
-
-  MaximumDrawdownCriterion maximumDrawdown() {
-    return maximumDrawdown;
-  }
-
-  NetLossCriterion netLoss() {
-    return netLoss;
-  }
-
-  NetProfitCriterion netProfit() {
-    return netProfit;
-  }
-
-  NumberOfPositionsCriterion numberOfPositions() {
-    return numberOfPositions;
-  }
-
-  ProfitLossCriterion profitLoss() {
-    return profitLoss;
-  }
-
-  ProfitLossPercentageCriterion profitLossPercentage() {
-    return profitLossPercentage;
-  }
-
-  ProfitLossRatioCriterion profitLossRatio() {
-    return profitLossRatio;
-  }
-
-  ReturnOverMaxDrawdownCriterion returnOverMaxDrawdown() {
-    return returnOverMaxDrawdown;
-  }
-
-  WinningPositionsRatioCriterion winningPositionsRatio() {
-    return winningPositionsRatio;
+    public int intValue(BarSeries series, TradingRecord tradingRecord) {
+      return calculate(series, tradingRecord).intValue();
+    }
   }
 }

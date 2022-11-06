@@ -13,6 +13,5 @@ public class AdaptersModule extends AbstractModule {
 
   private void bindTradeStrategyAdapters(Multibinder<TradeStrategyAdapter> multibinder) {
     multibinder.addBinding().to(AdxTradeStrategyAdapter.class);
-    multibinder.addBinding().to(CompositeTradeStrategyAdapter.class);
   }
 }

@@ -2,7 +2,7 @@ package com.verlumen.tradestar.core.backtesting;
 
 import com.google.auto.value.AutoValue;
 import com.google.auto.value.extension.memoized.Memoized;
-import com.google.inject.Inject;
+import com.verlumen.tradestar.core.backtesting.AnalysisCriteria.Criterion;
 import com.verlumen.tradestar.protos.strategies.TradeStrategyTestResult;
 import com.verlumen.tradestar.protos.strategies.TradeStrategyTestResult.MaxDrawdownReport;
 import com.verlumen.tradestar.protos.strategies.TradeStrategyTestResult.PositionReport;
@@ -13,80 +13,80 @@ import org.ta4j.core.BarSeries;
 import org.ta4j.core.TradingRecord;
 import org.ta4j.core.num.Num;
 
+import java.io.Serializable;
+
 import static java.lang.Math.max;
 
-class TestResultFactory {
-  private final AnalysisCriteria criteria;
-
-  @Inject
-  TestResultFactory(AnalysisCriteria criteria) {
-    this.criteria = criteria;
-  }
-
+class TestResultFactory implements Serializable {
   public TradeStrategyTestResult create(BarSeries series, TradingRecord record) {
-    return Specimen.create(criteria, series, record).testResult();
+    return Specimen.create(series, record).testResult();
   }
 
   @AutoValue
   abstract static class Specimen {
-    private static Specimen create(
-        AnalysisCriteria criteria, BarSeries series, TradingRecord record) {
-      return new AutoValue_TestResultFactory_Specimen(criteria, series, record);
+    private static Specimen create(BarSeries series, TradingRecord record) {
+      return new AutoValue_TestResultFactory_Specimen(series, record);
     }
-
-    abstract AnalysisCriteria criteria();
 
     abstract BarSeries series();
 
     abstract TradingRecord record();
 
+    private double doubleValue(Criterion criterion) {
+      return criterion.doubleValue(series(), record());
+    }
+
+    private int intValue(Criterion criterion) {
+      return criterion.intValue(series(), record());
+    }
+
     @Memoized
     MaxDrawdownReport maxDrawdownReport() {
       return MaxDrawdownReport.newBuilder()
-          .setAmount(doubleValue(criteria().maximumDrawdown()))
-          .setReturn(doubleValue(criteria().returnOverMaxDrawdown()))
-          .build();
+              .setAmount(doubleValue(Criterion.MAX_DRAWDOWN))
+              .setReturn(doubleValue(Criterion.RETURN_OVER_MAX_DRAWDOWN))
+              .build();
     }
 
     @Memoized
     PositionReport positionReport() {
-      int count = intValue(criteria().numberOfPositions());
-      int breakEven = intValue(criteria().numberOfBreakEvenPositions());
-      int losing = intValue(criteria().numberOfLosingPositions());
+      int count = intValue(Criterion.NUM_POS);
+      int breakEven = intValue(Criterion.NUM_BREAK_EVEN_POS);
+      int losing = intValue(Criterion.NUM_LOSING_POS);
       int winning = max(count - breakEven - losing, 0);
       return PositionReport.newBuilder()
           .setBreakEven(breakEven)
-          .setConsecutiveWinning(intValue(criteria().numberOfConsecutiveWinningPositions()))
+          .setConsecutiveWinning(intValue(Criterion.NUM_CONSEC_WIN_POS))
           .setCount(count)
           .setLosing(losing)
-          .setLosingRatio(doubleValue(criteria().losingPositionsRatio()))
+          .setLosingRatio(doubleValue(Criterion.LOSING_POS_RATIO))
           .setWinning(winning)
-          .setWinningRatio(doubleValue(criteria().winningPositionsRatio()))
+          .setWinningRatio(doubleValue(Criterion.WINNING_POS_RATIO))
           .build();
     }
 
     @Memoized
     ProfitLossReport profitLossReport() {
       return ProfitLossReport.newBuilder()
-          .setAmount(doubleValue(criteria().profitLoss()))
-          .setAverageLoss(doubleValue(criteria().averageLoss()))
-          .setAverageProfit(doubleValue(criteria().averageProfit()))
-          .setGrossLoss(doubleValue(criteria().grossLoss()))
-          .setGrossProfit(doubleValue(criteria().grossProfit()))
-          .setNetLoss(doubleValue(criteria().netLoss()))
-          .setNetProfit(doubleValue(criteria().netProfit()))
-          .setPercentage(doubleValue(criteria().profitLossPercentage()))
-          .setRatio(doubleValue(criteria().profitLossRatio()))
+          .setAmount(doubleValue(Criterion.PROFIT_LOSS))
+          .setAverageLoss(doubleValue(Criterion.AVG_LOSS))
+          .setAverageProfit(doubleValue(Criterion.AVG_PROFIT))
+          .setGrossLoss(doubleValue(Criterion.GROSS_LOSS))
+          .setGrossProfit(doubleValue(Criterion.GROSS_PROFIT))
+          .setNetLoss(doubleValue(Criterion.NET_LOSS))
+          .setNetProfit(doubleValue(Criterion.NET_PROFIT))
+          .setPercentage(doubleValue(Criterion.PROFIT_LOSS_PERCENTAGE))
+          .setRatio(doubleValue(Criterion.PROFIT_LOSS_RATIO))
           .build();
     }
 
     @Memoized
     ReturnReport returnReport() {
       return ReturnReport.newBuilder()
-          .setAveragePerBar(doubleValue(criteria().averageReturnPerBar()))
-          .setBuyAndHold(doubleValue(criteria().buyAndHoldReturn()))
-          .setExpectancy(doubleValue(criteria().expectancy()))
-          .setGross(doubleValue(criteria().grossReturn()))
+          .setAveragePerBar(doubleValue(Criterion.AVG_RETURN_PER_BAR))
+          .setBuyAndHold(doubleValue(Criterion.BUY_AND_HOLD_RETURN))
+          .setExpectancy(doubleValue(Criterion.EXPECTANCY))
+          .setGross(doubleValue(Criterion.GROSS_RETURN))
           .build();
     }
 
@@ -98,18 +98,6 @@ class TestResultFactory {
           .setProfitLossReport(profitLossReport())
           .setReturnReport(returnReport())
           .build();
-    }
-
-    private double doubleValue(AnalysisCriterion criterion) {
-      return getValue(criterion).doubleValue();
-    }
-
-    private int intValue(AnalysisCriterion criterion) {
-      return getValue(criterion).intValue();
-    }
-
-    private Num getValue(AnalysisCriterion criterion) {
-      return criterion.calculate(series(), record());
     }
   }
 }

@@ -1,6 +1,7 @@
 package com.verlumen.tradestar.core.backtesting;
 
 import com.google.auto.value.AutoValue;
+import com.google.auto.value.extension.serializable.SerializableAutoValue;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Guice;
@@ -20,6 +21,7 @@ import org.junit.runners.JUnit4;
 import org.ta4j.core.*;
 import org.ta4j.core.rules.BooleanRule;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.Set;
@@ -31,7 +33,7 @@ import static java.lang.Math.random;
 import static org.ta4j.core.num.DecimalNum.valueOf;
 
 @RunWith(JUnit4.class)
-public class BacktesterImplTest {
+public class BacktesterTest {
   private static final Bar BAR =
       BaseBar.builder()
           .closePrice(valueOf(random()))
@@ -68,7 +70,8 @@ public class BacktesterImplTest {
       ImmutableSet.of(ADX_ADAPTER, COMPOSITE_ADAPTER);
 
   private static final Params TEST_PARAMS = Params.create(ONE_MINUTE_CANDLES, ADX_TRADE_STRATEGY);
-  @Inject private BacktesterImpl backTester;
+
+  @Inject private Backtester backTester;
 
   private static Candle newCandle(Granularity granularity, long startTime) {
     Candle.Builder builder =
@@ -103,12 +106,13 @@ public class BacktesterImplTest {
   }
 
   @AutoValue
+  @SerializableAutoValue
   abstract static class FakeAdapter implements TradeStrategyAdapter {
     static FakeAdapter create(
         TradeStrategy.StrategyOneOfCase strategyOneOfCase,
-        Function<TradeStrategy, Strategy> strategyFunction,
+        SerializableFunction<TradeStrategy, Strategy> strategyFunction,
         TradeStrategy... strategies) {
-      return new AutoValue_BacktesterImplTest_FakeAdapter(
+      return new AutoValue_BacktesterTest_FakeAdapter(
           strategyOneOfCase, strategyFunction, ImmutableSet.copyOf(strategies));
     }
 
@@ -125,5 +129,7 @@ public class BacktesterImplTest {
     public Strategy toTa4jStrategy(TradeStrategy tradeStrategy, BarSeries barSeries) {
       return strategyFunction().apply(tradeStrategy);
     }
+
+    interface SerializableFunction<T1, T2> extends Function<T1, T2>, Serializable {}
   }
 }

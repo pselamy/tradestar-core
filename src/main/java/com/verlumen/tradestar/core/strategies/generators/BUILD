@@ -4,6 +4,8 @@ java_library(
     visibility = ["//:__subpackages__"],
     deps = [
         ":trade_strategy_generator",
+        "//src/main/java/com/verlumen/tradestar/core/strategies/adapters:composite_trade_strategy_adapter",
+        "//src/main/java/com/verlumen/tradestar/core/strategies/adapters:strategy_negation_handler",
         "//src/main/java/com/verlumen/tradestar/core/strategies/adapters:trade_strategy_adapter",
         "@maven//:com_google_guava_guava",
         "@maven//:com_google_inject_guice",

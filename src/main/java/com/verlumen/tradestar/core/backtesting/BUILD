@@ -12,20 +12,8 @@ java_library(
     srcs = ["Backtester.java"],
     visibility = ["//visibility:public"],
     deps = [
-        "//:autovalue",
-        "@maven//:com_google_guava_guava",
-        "@tradestar_protos//:candles_java_proto",
-        "@tradestar_protos//:strategies_java_proto",
-    ],
-)
-
-java_library(
-    name = "backtester_impl",
-    srcs = ["BacktesterImpl.java"],
-    visibility = ["//src/test/java:__subpackages__"],
-    deps = [
-        ":backtester",
         ":test_result_factory",
+        "//:autovalue",
         "//src/main/java/com/verlumen/tradestar/core/shared:candle_comparators",
         "//src/main/java/com/verlumen/tradestar/core/shared:constants",
         "//src/main/java/com/verlumen/tradestar/core/strategies/adapters:trade_strategy_adapter",
@@ -43,9 +31,9 @@ java_library(
     srcs = ["BacktestingModule.java"],
     visibility = ["//visibility:public"],
     deps = [
-        ":backtester",
-        ":backtester_impl",
+        ":test_result_factory",
         "//src/main/java/com/verlumen/tradestar/core/strategies/adapters:adapters_module",
+        "//src/main/java/com/verlumen/tradestar/core/strategies/adapters:trade_strategy_adapter",
         "@maven//:com_google_guava_guava",
         "@maven//:com_google_inject_guice",
     ],
@@ -54,6 +42,7 @@ java_library(
 java_library(
     name = "test_result_factory",
     srcs = ["TestResultFactory.java"],
+    visibility = ["//:__subpackages__"],
     deps = [
         ":analysis_criteria",
         "//:autovalue",
