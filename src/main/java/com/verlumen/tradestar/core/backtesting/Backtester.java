@@ -44,7 +44,11 @@ public class Backtester implements Serializable {
   }
 
   public TradeStrategyTestResult test(Params params) {
-    CandleDescriptor candleDescriptor = params.candles().stream().map(Candle::getCandleDescriptor).distinct().collect(onlyElement());
+    CandleDescriptor candleDescriptor =
+        params.candles().stream()
+            .map(Candle::getCandleDescriptor)
+            .distinct()
+            .collect(onlyElement());
     BarSeriesManager seriesManager = createBarSeriesManager(params.candles());
     BarSeries series = seriesManager.getBarSeries();
     Strategy strategy = createStrategy(params.strategy(), series, adapters);
