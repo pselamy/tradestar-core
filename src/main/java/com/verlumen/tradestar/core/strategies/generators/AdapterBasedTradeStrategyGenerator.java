@@ -20,7 +20,6 @@ public class AdapterBasedTradeStrategyGenerator implements TradeStrategyGenerato
   AdapterBasedTradeStrategyGenerator(
       Set<TradeStrategyAdapter> adapters, StrategyNegationHandler negationHandler) {
     this.adapters = ImmutableSet.<TradeStrategyAdapter>builder().addAll(adapters).build();
-
     this.negationHandler = negationHandler;
   }
 
