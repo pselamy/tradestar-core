@@ -7,6 +7,7 @@ import com.verlumen.tradestar.core.shared.CandleComparators;
 import com.verlumen.tradestar.core.strategies.adapters.TradeStrategyAdapter;
 import com.verlumen.tradestar.core.tradehistory.BarSeriesFactory;
 import com.verlumen.tradestar.protos.candles.Candle;
+import com.verlumen.tradestar.protos.candles.CandleDescriptor;
 import com.verlumen.tradestar.protos.strategies.TradeStrategy;
 import com.verlumen.tradestar.protos.strategies.TradeStrategyTestResult;
 import org.ta4j.core.BarSeries;
@@ -43,6 +44,7 @@ public class Backtester implements Serializable {
   }
 
   public TradeStrategyTestResult test(Params params) {
+    CandleDescriptor candleDescriptor = params.candles().stream().map(Candle::getCandleDescriptor).distinct().collect(onlyElement());
     BarSeriesManager seriesManager = createBarSeriesManager(params.candles());
     BarSeries series = seriesManager.getBarSeries();
     Strategy strategy = createStrategy(params.strategy(), series, adapters);
