@@ -71,8 +71,8 @@ public class Backtester implements Serializable {
         record);
   }
 
-  private long getStartSeconds(Candle candles) {
-    return candles.getStart().getSeconds();
+  private long getStartSeconds(Candle candle) {
+    return candle.getStart().getSeconds();
   }
 
   static class BarSeriesManagerFactory {
