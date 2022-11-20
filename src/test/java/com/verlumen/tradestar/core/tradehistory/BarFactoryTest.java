@@ -1,6 +1,5 @@
 package com.verlumen.tradestar.core.tradehistory;
 
-import com.google.protobuf.Timestamp;
 import com.google.testing.junit.testparameterinjector.TestParameter;
 import com.google.testing.junit.testparameterinjector.TestParameterInjector;
 import com.verlumen.tradestar.core.candles.GranularitySpec;
@@ -38,16 +37,20 @@ public class BarFactoryTest {
   private static final double VOLUME = random();
 
   private static final Candle CANDLE =
-      Candle.newBuilder()
-          .setStart(Timestamp.newBuilder().setSeconds(START_IN_SECONDS))
+      newCandle();
+  private static final BaseBarBuilder baseBarBuilder = BaseBar.builder();
+  
+  private static Candle newCandle() {
+    Candle.Builder builder =       Candle.newBuilder()
           .setOpen(OPEN)
           .setHigh(HIGH)
           .setLow(LOW)
           .setClose(CLOSE)
-          .setVolume(VOLUME)
-          .build();
-  private static final BaseBarBuilder baseBarBuilder = BaseBar.builder();
-
+          .setVolume(VOLUME);
+    builder.getStartBuilder().setSeconds(START_IN_SECONDS);
+    return builder.build();
+  }
+  
   @Before
   public void setup() {
     baseBarBuilder

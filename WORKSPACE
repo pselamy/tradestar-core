@@ -2,14 +2,13 @@ workspace(name = "tradestar_core")
 
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
-##########################
-#### PROTOBUF SUPPORT ####
-##########################
+############################
+##### PROTOBUF SUPPORT #####
+############################
 git_repository(
     name = "rules_proto",
-    commit = "3212323502e21b819ac4fbdd455cb227ad0f6394",
     remote = "https://github.com/bazelbuild/rules_proto",
-    shallow_since = "1649153521 +0200",
+    tag = "4.0.0-3.20.0",
 )
 
 load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
@@ -17,6 +16,16 @@ load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_
 rules_proto_dependencies()
 
 rules_proto_toolchains()
+
+git_repository(
+    name = "com_github_grpc_grpc",
+    remote = "https://github.com/grpc/grpc",
+    tag = "v1.50.1",
+)
+
+load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
+
+grpc_deps()
 
 ######################
 #### JAVA SUPPORT ####
@@ -69,7 +78,7 @@ maven_install(
 ##########################
 git_repository(
     name = "tradestar_protos",
-    commit = "d3b0f8b24f7b13d35562d2505d0256e94a0826b3",
+    commit = "b0cbbebcedd082758de1fe11983ab848195542ce",
     remote = "https://github.com/pselamy/tradestar-protos",
     shallow_since = "1668486570 -0500",
 )
