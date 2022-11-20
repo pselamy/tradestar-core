@@ -10,6 +10,5 @@ java_test(
         "@maven//:com_google_truth_truth",
         "@maven//:org_ta4j_ta4j_core",
         "@tradestar_protos//:candles_java_proto",
-        "@tradestar_protos//:timestamp_java_proto",
     ],
 )
