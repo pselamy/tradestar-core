@@ -2,6 +2,7 @@ java_test(
     name = "BarFactoryTest",
     srcs = ["BarFactoryTest.java"],
     deps = [
+        "@com_google_protobuf//:timestamp_proto",
         "//src/main/java/com/verlumen/tradestar/core/candles:granularity_spec",
         "//src/main/java/com/verlumen/tradestar/core/tradehistory:bar_factory",
         "@maven//:com_google_testparameterinjector_test_parameter_injector",
