@@ -15,3 +15,15 @@ jobs:
       - uses: axel-op/googlejavaformat-action@v3
         with:
           args: "--skip-sorting-imports --replace"
+          skip-commit: true          
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "Format Java code with google-java-format"
+          commit-message: ":art: Format Java code with google-java-format"
+          body: |
+            There appear to be some Java formatting errors in ${{ github.sha }}. This pull request
+            uses google-java-format to fix these issues.
+          base: ${{ github.head_ref }} # Creates pull request onto pull request or commit branch
+          branch: actions/googlejavaformat          
