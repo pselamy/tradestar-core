@@ -41,7 +41,7 @@ public class BarFactoryTest {
   private static final BaseBarBuilder baseBarBuilder = BaseBar.builder();
   
   private static Candle newCandle() {
-    Candle.Builder builder =       Candle.newBuilder()
+    Candle.Builder builder = Candle.newBuilder()
           .setOpen(OPEN)
           .setHigh(HIGH)
           .setLow(LOW)
