@@ -36,21 +36,21 @@ public class BarFactoryTest {
   private static final double CLOSE = random();
   private static final double VOLUME = random();
 
-  private static final Candle CANDLE =
-      newCandle();
+  private static final Candle CANDLE = newCandle();
   private static final BaseBarBuilder baseBarBuilder = BaseBar.builder();
-  
+
   private static Candle newCandle() {
-    Candle.Builder builder = Candle.newBuilder()
-          .setOpen(OPEN)
-          .setHigh(HIGH)
-          .setLow(LOW)
-          .setClose(CLOSE)
-          .setVolume(VOLUME);
+    Candle.Builder builder =
+        Candle.newBuilder()
+            .setOpen(OPEN)
+            .setHigh(HIGH)
+            .setLow(LOW)
+            .setClose(CLOSE)
+            .setVolume(VOLUME);
     builder.getStartBuilder().setSeconds(START_IN_SECONDS);
     return builder.build();
   }
-  
+
   @Before
   public void setup() {
     baseBarBuilder
