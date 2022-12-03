@@ -44,7 +44,7 @@ class AnalysisCriteria implements Serializable {
     private AnalysisCriterion getAnalysisCriterion() {
       try {
         Constructor<?> ctor = criterionClass.getConstructor();
-        return (AnalysisCriterion) ctor.newInstance(new Object[]{});
+        return (AnalysisCriterion) ctor.newInstance(new Object[] {});
       } catch (Exception e) {
         throw new IllegalStateException(e);
       }
