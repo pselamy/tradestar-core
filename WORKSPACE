@@ -61,7 +61,7 @@ maven_install(
         "com.google.inject:guice:5.1.0",
         "com.google.mug:mug:6.3",
         "org.apache.commons:commons-lang3:3.12.0",
-        "org.ta4j:ta4j-core:0.14",
+        "org.ta4j:ta4j-core:0.15",
         # Unit Test Dependencies
         "com.google.inject.extensions:guice-testlib:5.1.0",
         "com.google.testparameterinjector:test-parameter-injector:1.8",
@@ -78,7 +78,7 @@ maven_install(
 ##########################
 git_repository(
     name = "tradestar_protos",
-    commit = "b0cbbebcedd082758de1fe11983ab848195542ce",
+    commit = "feffc465e9032207590cf54b412bdf3c433c3346",
     remote = "https://github.com/pselamy/tradestar-protos",
-    shallow_since = "1668486570 -0500",
+    shallow_since = "1670041544 -0500",
 )
