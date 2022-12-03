@@ -61,7 +61,7 @@ maven_install(
         "com.google.inject:guice:5.1.0",
         "com.google.mug:mug:6.3",
         "org.apache.commons:commons-lang3:3.12.0",
-        "org.ta4j:ta4j-core:0.14",
+        "org.ta4j:ta4j-core:0.15",
         # Unit Test Dependencies
         "com.google.inject.extensions:guice-testlib:5.1.0",
         "com.google.testparameterinjector:test-parameter-injector:1.8",
