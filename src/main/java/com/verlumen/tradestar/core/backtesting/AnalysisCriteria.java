@@ -27,8 +27,10 @@ class AnalysisCriteria implements Serializable {
     NET_LOSS(NetLossCriterion.class),
     NET_PROFIT(NetProfitCriterion.class),
     NUM_BREAK_EVEN_POS(NumberOfBreakEvenPositionsCriterion.class),
-    NUM_CONSEC_WINNING_POS(()-> new NumberOfConsecutivePositionsCriterion(AnalysisCriterion.PositionFilter.PROFIT)),
-    NUM_CONSEC_LOSING_POS(()-> new NumberOfConsecutivePositionsCriterion(AnalysisCriterion.PositionFilter.LOSS)),
+    NUM_CONSEC_WINNING_POS(
+        () -> new NumberOfConsecutivePositionsCriterion(AnalysisCriterion.PositionFilter.PROFIT)),
+    NUM_CONSEC_LOSING_POS(
+        () -> new NumberOfConsecutivePositionsCriterion(AnalysisCriterion.PositionFilter.LOSS)),
     NUM_LOSING_POS(NumberOfLosingPositionsCriterion.class),
     NUM_POS(NumberOfPositionsCriterion.class),
     PROFIT_LOSS(ProfitLossCriterion.class),
@@ -57,7 +59,8 @@ class AnalysisCriteria implements Serializable {
     }
 
     private Optional<Num> calculate(BarSeries series, TradingRecord tradingRecord) {
-      return Optional.of(supplier.get().calculate(series, tradingRecord))
+      return Optional.of(supplier.get())
+          .map(criterion -> criterion.calculate(series, tradingRecord))
           .filter(num -> !num.isNaN() && !num.isZero());
     }
 
