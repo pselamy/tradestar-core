@@ -52,7 +52,7 @@ class AnalysisCriteria implements Serializable {
 
     private Optional<Num> calculate(BarSeries series, TradingRecord tradingRecord) {
       return Optional.of(getAnalysisCriterion().calculate(series, tradingRecord))
-              .filter(num -> !num.isNaN() && !num.isZero());
+           .filter(num -> !num.isNaN() && !num.isZero());
     }
 
     public Optional<Double> doubleValue(BarSeries series, TradingRecord tradingRecord) {
