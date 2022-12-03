@@ -10,6 +10,7 @@ import org.ta4j.core.num.Num;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 class AnalysisCriteria implements Serializable {
   public enum Criterion {
@@ -26,7 +27,8 @@ class AnalysisCriteria implements Serializable {
     NET_LOSS(NetLossCriterion.class),
     NET_PROFIT(NetProfitCriterion.class),
     NUM_BREAK_EVEN_POS(NumberOfBreakEvenPositionsCriterion.class),
-    NUM_CONSEC_POS(NumberOfConsecutivePositionsCriterion.class),
+    NUM_CONSEC_WINNING_POS(()-> new NumberOfConsecutivePositionsCriterion(AnalysisCriterion.PositionFilter.PROFIT)),
+    NUM_CONSEC_LOSING_POS(()-> new NumberOfConsecutivePositionsCriterion(AnalysisCriterion.PositionFilter.LOSS)),
     NUM_LOSING_POS(NumberOfLosingPositionsCriterion.class),
     NUM_POS(NumberOfPositionsCriterion.class),
     PROFIT_LOSS(ProfitLossCriterion.class),
@@ -35,23 +37,27 @@ class AnalysisCriteria implements Serializable {
     RETURN_OVER_MAX_DRAWDOWN(ReturnOverMaxDrawdownCriterion.class),
     WINNING_POS_RATIO(WinningPositionsRatioCriterion.class);
 
-    private final Class<? extends AnalysisCriterion> criterionClass;
+    private final Supplier<AnalysisCriterion> supplier;
 
     Criterion(Class<? extends AnalysisCriterion> criterionClass) {
-      this.criterionClass = criterionClass;
+      this(
+          () -> {
+            try {
+              Constructor<? extends AnalysisCriterion> constructor =
+                  criterionClass.getConstructor();
+              return constructor.newInstance();
+            } catch (Exception e) {
+              throw new RuntimeException(e);
+            }
+          });
     }
 
-    private AnalysisCriterion getAnalysisCriterion() {
-      try {
-        Constructor<?> ctor = criterionClass.getConstructor();
-        return (AnalysisCriterion) ctor.newInstance(new Object[] {});
-      } catch (Exception e) {
-        throw new IllegalStateException(e);
-      }
+    Criterion(Supplier<AnalysisCriterion> supplier) {
+      this.supplier = supplier;
     }
 
     private Optional<Num> calculate(BarSeries series, TradingRecord tradingRecord) {
-      return Optional.of(getAnalysisCriterion().calculate(series, tradingRecord))
+      return Optional.of(supplier.get().calculate(series, tradingRecord))
           .filter(num -> !num.isNaN() && !num.isZero());
     }
 
