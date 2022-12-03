@@ -76,9 +76,9 @@ class TestResultFactory implements Serializable {
       return intValue(Criterion.NUM_POS)
           .filter(positionCount -> positionCount > 0)
           .map(PositionReport.newBuilder()::setCount)
+          .flatMap(builder -> intValue(Criterion.NUM_BREAK_EVEN_POS).map(builder::setBreakEven))
           .flatMap(
               builder -> intValue(Criterion.NUM_CONSEC_WIN_POS).map(builder::setConsecutiveWinning))
-          .flatMap(builder -> intValue(Criterion.NUM_BREAK_EVEN_POS).map(builder::setBreakEven))
           .flatMap(builder -> intValue(Criterion.NUM_LOSING_POS).map(builder::setLosing))
           .flatMap(builder -> intValue(Criterion.LOSING_POS_RATIO).map(builder::setLosingRatio))
           .flatMap(builder -> intValue(Criterion.WINNING_POS_RATIO).map(builder::setWinningRatio))
