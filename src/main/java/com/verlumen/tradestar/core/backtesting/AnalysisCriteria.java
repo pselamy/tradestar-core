@@ -27,10 +27,10 @@ class AnalysisCriteria implements Serializable {
     NET_LOSS(NetLossCriterion.class),
     NET_PROFIT(NetProfitCriterion.class),
     NUM_BREAK_EVEN_POS(NumberOfBreakEvenPositionsCriterion.class),
-    NUM_CONSEC_WINNING_POS(
-        () -> new NumberOfConsecutivePositionsCriterion(AnalysisCriterion.PositionFilter.PROFIT)),
     NUM_CONSEC_LOSING_POS(
         () -> new NumberOfConsecutivePositionsCriterion(AnalysisCriterion.PositionFilter.LOSS)),
+    NUM_CONSEC_WINNING_POS(
+        () -> new NumberOfConsecutivePositionsCriterion(AnalysisCriterion.PositionFilter.PROFIT)),
     NUM_LOSING_POS(NumberOfLosingPositionsCriterion.class),
     NUM_POS(NumberOfPositionsCriterion.class),
     PROFIT_LOSS(ProfitLossCriterion.class),
