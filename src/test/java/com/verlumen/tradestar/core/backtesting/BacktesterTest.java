@@ -43,7 +43,8 @@ public class BacktesterTest {
   private static final BarSeries BAR_SERIES =
       new BaseBarSeriesBuilder().withBars(ImmutableList.of(BAR)).build();
   private static final TradingRecord TRADING_RECORD = new BaseTradingRecord("fake-trading-record");
-  private static final FakeBarSeriesManager FAKE_BAR_SERIES_MANAGER = new FakeBarSeriesManager(BAR_SERIES);
+  private static final FakeBarSeriesManager FAKE_BAR_SERIES_MANAGER =
+      new FakeBarSeriesManager(BAR_SERIES);
   private static final ImmutableSet<Candle> ONE_MINUTE_CANDLES =
       ImmutableSet.of(newCandle(Granularity.ONE_MINUTE, 0), newCandle(Granularity.ONE_MINUTE, 60));
 
