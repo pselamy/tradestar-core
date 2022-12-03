@@ -3,8 +3,8 @@ package com.verlumen.tradestar.core.backtesting;
 import org.ta4j.core.AnalysisCriterion;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.TradingRecord;
-import org.ta4j.core.analysis.criteria.*;
-import org.ta4j.core.analysis.criteria.pnl.*;
+import org.ta4j.core.criteria.*;
+import org.ta4j.core.criteria.pnl.*;
 import org.ta4j.core.num.Num;
 
 import java.io.Serializable;
@@ -16,9 +16,7 @@ class AnalysisCriteria implements Serializable {
     AVG_LOSS(AverageLossCriterion.class),
     AVG_PROFIT(AverageProfitCriterion.class),
     AVG_RETURN_PER_BAR(AverageReturnPerBarCriterion.class),
-    NUM_BREAK_EVEN_POS(NumberOfBreakEvenPositionsCriterion.class),
-    BUY_AND_HOLD_RETURN(BuyAndHoldReturnCriterion.class),
-    NUM_CONSEC_WIN_POS(NumberOfConsecutiveWinningPositionsCriterion.class),
+    ENTER_AND_HOLD_RETURN(EnterAndHoldReturnCriterion.class),
     EXPECTANCY(ExpectancyCriterion.class),
     GROSS_LOSS(GrossLossCriterion.class),
     GROSS_PROFIT(GrossProfitCriterion.class),
@@ -27,6 +25,8 @@ class AnalysisCriteria implements Serializable {
     MAX_DRAWDOWN(MaximumDrawdownCriterion.class),
     NET_LOSS(NetLossCriterion.class),
     NET_PROFIT(NetProfitCriterion.class),
+    NUM_BREAK_EVEN_POS(NumberOfBreakEvenPositionsCriterion.class),
+    NUM_CONSEC_POS(NumberOfConsecutivePositionsCriterion.class),
     NUM_LOSING_POS(NumberOfLosingPositionsCriterion.class),
     NUM_POS(NumberOfPositionsCriterion.class),
     PROFIT_LOSS(ProfitLossCriterion.class),
@@ -44,7 +44,7 @@ class AnalysisCriteria implements Serializable {
     private AnalysisCriterion getAnalysisCriterion() {
       try {
         Constructor<?> ctor = criterionClass.getConstructor();
-        return (AnalysisCriterion) ctor.newInstance(new Object[] {});
+        return (AnalysisCriterion) ctor.newInstance(new Object[]{});
       } catch (Exception e) {
         throw new IllegalStateException(e);
       }
@@ -52,7 +52,7 @@ class AnalysisCriteria implements Serializable {
 
     private Optional<Num> calculate(BarSeries series, TradingRecord tradingRecord) {
       return Optional.of(getAnalysisCriterion().calculate(series, tradingRecord))
-          .filter(num -> !num.isNaN() && !num.isZero());
+              .filter(num -> !num.isNaN() && !num.isZero());
     }
 
     public Optional<Double> doubleValue(BarSeries series, TradingRecord tradingRecord) {

@@ -77,7 +77,7 @@ class TestResultFactory implements Serializable {
           .filter(positionCount -> positionCount > 0)
           .map(PositionReport.newBuilder()::setCount)
           .flatMap(
-              builder -> intValue(Criterion.NUM_CONSEC_WIN_POS).map(builder::setConsecutiveWinning))
+              builder -> intValue(Criterion.NUM_CONSEC_POS).map(builder::setConsecutive))
           .flatMap(builder -> intValue(Criterion.NUM_BREAK_EVEN_POS).map(builder::setBreakEven))
           .flatMap(builder -> intValue(Criterion.NUM_LOSING_POS).map(builder::setLosing))
           .flatMap(builder -> intValue(Criterion.LOSING_POS_RATIO).map(builder::setLosingRatio))
@@ -108,7 +108,7 @@ class TestResultFactory implements Serializable {
     Optional<ReturnReport> returnReport() {
       ReturnReport.Builder builder = ReturnReport.newBuilder();
       doubleValue(Criterion.AVG_RETURN_PER_BAR).ifPresent(builder::setAveragePerBar);
-      doubleValue(Criterion.BUY_AND_HOLD_RETURN).ifPresent(builder::setBuyAndHold);
+      doubleValue(Criterion.ENTER_AND_HOLD_RETURN).ifPresent(builder::setEnterAndHold);
       doubleValue(Criterion.EXPECTANCY).ifPresent(builder::setExpectancy);
       doubleValue(Criterion.GROSS_RETURN).ifPresent(builder::setGross);
       return Optional.of(builder.build())
